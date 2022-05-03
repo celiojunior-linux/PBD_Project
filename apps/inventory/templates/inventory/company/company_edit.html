@@ -1,0 +1,19 @@
+{% extends "layout/base.html" %}
+{% load crispy_forms_filters %}
+{% block content %}
+
+    <div class="card">
+        <form method="POST">
+            <div class="card-header">
+                Ficha de Empresa
+            </div>
+            <div class="card-body">
+                {% csrf_token %}
+                {{ form|crispy }}
+            </div>
+            <div class="card-footer">
+                <button class="btn btn-success">Salvar <i class="fa fa-save"></i></button>
+            </div>
+        </form>
+    </div>
+{% endblock %}
