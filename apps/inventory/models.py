@@ -1,5 +1,6 @@
 from django.db import models
-from django.utils import timezone
+from django.db.models.signals import post_delete
+from django.dispatch import receiver
 
 
 class Company(models.Model):
@@ -36,12 +37,17 @@ class Client(models.Model):
     rg = models.IntegerField()
     phone_number = models.CharField(max_length=11)
     category = models.CharField(max_length=100, choices=KINDS, default=0)
-    car = models.ForeignKey(to="Car", on_delete=models.CASCADE)
+    car = models.OneToOneField(to="Car", on_delete=models.CASCADE, unique=True)
     latitude = models.FloatField()
     longitude = models.FloatField()
 
 
 class Car(models.Model):
-    license_plate = models.CharField(max_length=7, primary_key=True)
+    license_plate = models.CharField(max_length=7, primary_key=True, unique=True)
     model = models.CharField(max_length=100)
     brand = models.CharField(max_length=100)
+
+
+@receiver(post_delete, sender=Client)
+def auto_delete_car(sender, instance, **kwargs):
+    instance.car.delete()

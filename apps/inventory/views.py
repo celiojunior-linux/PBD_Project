@@ -74,6 +74,7 @@ class ClientList(ListView):
 
 class ClientCreateView(CreateView, mixins.ClientCarMixin):
     model = models.Client
+    object = None
     template_name = "inventory/client/clients_edit.html"
     form_class = forms.ClientForm
     success_url = reverse_lazy("inventory:client-list")
@@ -85,9 +86,10 @@ class ClientCreateView(CreateView, mixins.ClientCarMixin):
             client_form = forms.ClientForm(request.POST)
             client_form.instance.car = car
             if client_form.is_valid():
-                client_form.save()
-                return super(ClientCreateView, self).post(request, *args, **kwargs)
-        return self.form_invalid(car_form)
+                return self.form_valid(client_form)
+            else:
+                return self.form_invalid(form=client_form)
+        return self.form_invalid(car_form=car_form)
 
 
 class ClientEditView(UpdateView):
@@ -97,21 +99,22 @@ class ClientEditView(UpdateView):
     pk_url_kwarg = "document"
 
     def get_context_data(self, **kwargs):
-        context = super(ClientEditView, self).get_context_data(**kwargs)
-        if "car_form" not in context:
-            context["car_form"] = forms.CarForm(instance=self.get_object().car)
-        return context
+        if "car_form" not in kwargs:
+            kwargs["car_form"] = forms.CarForm(instance=self.get_object().car)
+        return super(ClientEditView, self).get_context_data(**kwargs)
 
     def post(self, request, *args, **kwargs):
         car_form = forms.CarForm(request.POST, instance=self.get_object().car)
         if car_form.is_valid():
+            car_form.clean()
             car = car_form.save()
             client_form = forms.ClientForm(request.POST, instance=self.get_object())
             client_form.instance.car = car
             if client_form.is_valid():
+                client_form.full_clean()
                 client_form.save()
                 return super(ClientEditView, self).post(request, *args, **kwargs)
-        return self.form_invalid(car_form)
+        return self.render_to_response(self.get_context_data(form=car_form))
 
     def get_success_url(self):
         return self.request.path
@@ -120,7 +123,7 @@ class ClientEditView(UpdateView):
 class ClientDeleteView(DeleteView):
     model = models.Client
     success_url = reverse_lazy("inventory:client-list")
-    pk_url_kwarg = "code"
+    pk_url_kwarg = "document"
 
 
 class CarListView(ListView):

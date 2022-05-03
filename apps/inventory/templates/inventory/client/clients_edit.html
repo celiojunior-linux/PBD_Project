@@ -6,11 +6,11 @@
 {% block card_body %}
     {% csrf_token %}
     <div class="row">
-        <fieldset class="border col-6">
+        <fieldset class="border col-md-6">
             <legend>Informações do Cliente</legend>
             {{ form|crispy }}
         </fieldset>
-        <fieldset class="border col-6">
+        <fieldset class="border col-md-6">
             <legend>Informações do Carro</legend>
             {{ car_form|crispy }}
         </fieldset>
