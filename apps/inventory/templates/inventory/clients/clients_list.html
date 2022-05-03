@@ -1,12 +1,13 @@
 {% extends "crud/table_view.html" %}
-{% block view_title %}Empresas{% endblock %}
+{% block view_title %}Clientes{% endblock %}
 {% block table_head %}
     <tr>
-        <th class="w-25"></th>
-        <th>CNPJ</th>
+        <th></th>
+        <th>CPF/CNPJ</th>
         <th>Nome</th>
-        <th>Latitude</th>
-        <th>Longitude</th>
+        <th>Endereço</th>
+        <th>Telefone</th>
+        <th>Categoria</th>
     </tr>
 {% endblock %}
 {% block table_row %}
@@ -18,13 +19,14 @@
                     onclick="assignToDelete('{{ object }}', '{% url 'inventory:company-delete' object.cnpj %}')">Remover
                 <i class="fa fa-trash"></i></button>
         </th>
-        <td>{{ object.cnpj }}</td>
+        <td>{{ object.document }}</td>
         <td>{{ object.name }}</td>
-        <td>{{ object.latitude }}</td>
-        <td>{{ object.longitude }}</td>
+        <td>{{ object.address }}</td>
+        <td>{{ object.phone_number }}</td>
+        <td>{{ object.category }}</td>
     </tr>
 {% endblock %}
 {% block card_footer %}
-    <a class="btn btn-sm btn-success" href="{% url "inventory:company-create" %}">Adicionar <i
+    <a class="btn btn-sm btn-success" href="{% url "inventory:client-create" %}">Adicionar <i
             class="fa fa-plus-circle"></i></a>
 {% endblock card_footer %}

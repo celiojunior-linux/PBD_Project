@@ -34,11 +34,14 @@
             <i class="fas fa-clipboard-list"></i>
             <span>Inventário</span>
         </a>
-        <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+        <div id="collapseTwo" class="collapse {% if request.resolver_match.app_name == "inventory" %}show{% endif %}" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item" href="{% url "company-list" %}">Empresas</a>
-                <a class="collapse-item" href="#">Funcionarios</a>
-                <a class="collapse-item" href="#">Clientes</a>
+                {% url "inventory:company-list" as path %}
+                <a class="collapse-item {% if path == request.path %}active{% endif %}" href="{{ path }}">Empresas</a>
+                {% url "inventory:employee-list" as path %}
+                <a class="collapse-item {% if path == request.path %}active{% endif %}" href="{{ path }}">Funcionarios</a>
+                {% url "inventory:client-list" as path %}
+                <a class="collapse-item {% if path == request.path %}active{% endif %}" href="{{ path }}">Clientes</a>
                 <a class="collapse-item" href="#">Automóveis</a>
             </div>
         </div>

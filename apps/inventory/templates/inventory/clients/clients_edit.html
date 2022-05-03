@@ -1,0 +1,18 @@
+{% extends "crud/create_view.html" %}
+{% load crispy_forms_filters %}
+{% block card_header %}
+    <h3 class="text-dark">Ficha de Cliente</h3>
+{% endblock %}
+{% block card_body %}
+    <div class="row">
+        <fieldset class="border col-6">
+            <legend>Informações do Cliente</legend>
+            {{ form|crispy }}
+        </fieldset>
+        <fieldset class="border col-6">
+            <legend>Informações do Carro</legend>
+            {{ car_form|crispy }}
+        </fieldset>
+    </div>
+
+{% endblock %}
