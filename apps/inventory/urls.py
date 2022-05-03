@@ -22,4 +22,7 @@ urlpatterns = [
     path("client/edit/<str:document>", views.ClientEditView.as_view(), name="client-edit"),
     path("client/delete/<str:document>", views.ClientDeleteView.as_view(), name="client-delete"),
 
+
+    # Car
+    path("car/list", views.CarListView.as_view(), name="car-list")
 ]

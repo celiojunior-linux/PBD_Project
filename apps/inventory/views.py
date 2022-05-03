@@ -69,12 +69,12 @@ class EmployeeDeleteView(DeleteView):
 
 class ClientList(ListView):
     model = models.Client
-    template_name = "inventory/clients/clients_list.html"
+    template_name = "inventory/client/clients_list.html"
 
 
 class ClientCreateView(CreateView, mixins.ClientCarMixin):
     model = models.Client
-    template_name = "inventory/clients/clients_edit.html"
+    template_name = "inventory/client/clients_edit.html"
     form_class = forms.ClientForm
     success_url = reverse_lazy("inventory:client-list")
 
@@ -91,7 +91,7 @@ class ClientCreateView(CreateView, mixins.ClientCarMixin):
 
 
 class ClientEditView(UpdateView):
-    template_name = "inventory/clients/clients_edit.html"
+    template_name = "inventory/client/clients_edit.html"
     form_class = forms.ClientForm
     queryset = models.Client.objects.all()
     pk_url_kwarg = "document"
@@ -121,3 +121,8 @@ class ClientDeleteView(DeleteView):
     model = models.Client
     success_url = reverse_lazy("inventory:client-list")
     pk_url_kwarg = "code"
+
+
+class CarListView(ListView):
+    model = models.Car
+    template_name = "inventory/car/car_list.html"

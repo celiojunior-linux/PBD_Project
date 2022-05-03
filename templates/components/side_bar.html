@@ -42,6 +42,8 @@
                 <a class="collapse-item {% if path == request.path %}active{% endif %}" href="{{ path }}">Funcionarios</a>
                 {% url "inventory:client-list" as path %}
                 <a class="collapse-item {% if path == request.path %}active{% endif %}" href="{{ path }}">Clientes</a>
+                {% url "inventory:car-list" as path %}
+                <a class="collapse-item {% if path == request.path %}active{% endif %}" href="{{ path }}">Automóveis</a>
             </div>
         </div>
     </li>
