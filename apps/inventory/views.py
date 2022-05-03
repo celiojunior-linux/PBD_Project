@@ -1,9 +1,11 @@
+from django.contrib import messages
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 
 from . import forms
-from . import models
 from . import mixins
+from . import models
+
 
 class CompanyListView(ListView):
     model = models.Company
@@ -25,6 +27,10 @@ class CompanyEditView(UpdateView):
 
     def get_success_url(self):
         return self.request.path
+
+    def form_valid(self, form):
+        messages.success(self.request, f" \"{self.object}\" cadastrado com sucesso!")
+        return super(CompanyEditView, self).form_valid(form)
 
 
 class CompanyDeleteView(DeleteView):
@@ -72,18 +78,40 @@ class ClientCreateView(CreateView, mixins.ClientCarMixin):
     form_class = forms.ClientForm
     success_url = reverse_lazy("inventory:client-list")
 
+    def post(self, request, *args, **kwargs):
+        car_form = forms.CarForm(request.POST)
+        if car_form.is_valid():
+            car = car_form.save()
+            client_form = forms.ClientForm(request.POST)
+            client_form.instance.car = car
+            if client_form.is_valid():
+                client_form.save()
+                return super(ClientCreateView, self).post(request, *args, **kwargs)
+        return self.form_invalid(car_form)
+
 
 class ClientEditView(UpdateView):
     template_name = "inventory/clients/clients_edit.html"
-    form_class = forms.EmployeeForm
-    queryset = models.Employee.objects.all()
-    pk_url_kwarg = "code"
+    form_class = forms.ClientForm
+    queryset = models.Client.objects.all()
+    pk_url_kwarg = "document"
 
     def get_context_data(self, **kwargs):
         context = super(ClientEditView, self).get_context_data(**kwargs)
         if "car_form" not in context:
-            context["car_form"] = forms.CarForm()
+            context["car_form"] = forms.CarForm(instance=self.get_object().car)
         return context
+
+    def post(self, request, *args, **kwargs):
+        car_form = forms.CarForm(request.POST, instance=self.get_object().car)
+        if car_form.is_valid():
+            car = car_form.save()
+            client_form = forms.ClientForm(request.POST, instance=self.get_object())
+            client_form.instance.car = car
+            if client_form.is_valid():
+                client_form.save()
+                return super(ClientEditView, self).post(request, *args, **kwargs)
+        return self.form_invalid(car_form)
 
     def get_success_url(self):
         return self.request.path
