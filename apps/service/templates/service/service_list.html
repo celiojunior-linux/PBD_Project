@@ -1,2 +1,47 @@
+
+
 {% extends "layout/base.html" %}
-{% block heading %} Hello World {% endblock %}
+{% block content %}
+    <div class="d-flex justify-content-between align-items-center my-2 shadow p-4">
+        <div>
+            <h3>Ordens de Serviço</h3>
+        </div>
+        <div>
+            <button class="btn btn-sm btn-success">Adicionar <i class="fa fa-plus-circle"></i></button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card p-3 mb-2">
+                <div class="d-flex justify-content-between">
+                    <div class="d-flex flex-row align-items-center">
+                        <div class="icon"><i class="fa fa-cogs" style="font-size: 32px;"></i>&nbsp;</div>
+                        <div class="ms-2 c-details">
+                            <h6 class="mb-0">Funcionário Responsável</h6>
+                            <span>2 dias atrás</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-5">
+                    <h3 class="heading">Descrição Ordem de Serviço</h3>
+                    <div>Cliente: Nome do Cliente</div>
+                    <div class="mt-5">
+                        <span>Andamento</span>
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="50"
+                                 aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                        <div class="mt-3">
+                            <button class="btn btn-sm btn-primary"><i class="fa fa-search"></i> Detalhes
+                            </button>
+                            <button class="btn btn-sm btn-warning"><i class="fa fa-pen"></i> Editar</button>
+                            {#                            <button class="btn btn-sm btn-outline-primary" onclick="alert('Impressão indisponível no momento')"><i class="fa fa-print"></i> Imprimir</button>#}
+                            <button class="btn btn-sm btn-danger"><i class="fa fa-trash"></i> Deletar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
