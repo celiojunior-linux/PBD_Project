@@ -1,6 +1,8 @@
-from django.shortcuts import render
-from django.views.generic import TemplateView
+from django.views.generic import ListView
+
+from . import models
 
 
-class BaseTemplate(TemplateView):
-    template_name = "service/base_template.html"
+class ServiceOrderList(ListView):
+    model = models.ServiceOrder
+    template_name = "service/service_list.html"

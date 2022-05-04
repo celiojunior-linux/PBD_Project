@@ -38,7 +38,7 @@
         <div id="collapseTwo" class="collapse {% if request.resolver_match.app_name == "inventory" %}show{% endif %}" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 {% url "inventory:company-list" as path %}
-                <a class="collapse-item {% if path == request.path %}active{% endif %}" href="{{ path }}">Empresas</a>
+                <a class="collapse-item {% if path == request.path %}active{% endif %}" href="{{ path }}">Entidades</a>
                 {% url "inventory:employee-list" as path %}
                 <a class="collapse-item {% if path == request.path %}active{% endif %}" href="{{ path }}">Funcionarios</a>
                 {% url "inventory:client-list" as path %}
@@ -55,11 +55,11 @@
             <i class="fas fa-fw fa-wrench"></i>
             <span>Serviço</span>
         </a>
-        <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities"
+        <div id="collapseUtilities" class="collapse {% if request.resolver_match.app_name == "service" %}show{% endif %}" aria-labelledby="headingUtilities"
              data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-
-                <a class="collapse-item" href="{% static "utilities-color.html" %}">Ordem de Serviço</a>
+            {% url "service:service-list" as path %}
+                <a class="collapse-item {% if path == request.path %}active{% endif %}" href="{{ path }}">Ordens de Serviço</a>
             </div>
         </div>
     </li>

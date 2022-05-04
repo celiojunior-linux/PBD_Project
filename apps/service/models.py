@@ -1,4 +1,6 @@
+from django.apps import apps
 from django.db import models
+from django.utils import timezone
 
 
 class Service(models.Model):
@@ -12,4 +14,9 @@ class ServiceItem(models.Model):
     code = models.AutoField(primary_key=True)
     description = models.CharField(max_length=100)
     cost = models.FloatField()
-    
+
+
+class ServiceOrder(models.Model):
+    code = models.AutoField(primary_key=True)
+    entrance_date = models.DateField(default=timezone.now)
+    departure_date = models.DateField()

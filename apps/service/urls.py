@@ -2,6 +2,8 @@ from django.urls import path
 
 from apps.service import views
 
+app_name = "service"
+
 urlpatterns = [
-    path('create/', views.BaseTemplate.as_view(), name="service-create"),
+    path('list/', views.ServiceOrderList.as_view(), name="service-list"),
 ]
