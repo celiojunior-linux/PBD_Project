@@ -41,6 +41,9 @@ class Client(models.Model):
     latitude = models.FloatField()
     longitude = models.FloatField()
 
+    def __str__(self):
+        return self.document
+
 
 class Car(models.Model):
     license_plate = models.CharField(max_length=7, unique=True)

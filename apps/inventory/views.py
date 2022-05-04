@@ -82,15 +82,15 @@ class ClientCreateView(CreateView, mixins.ClientCarMixin):
 
     def post(self, request, *args, **kwargs):
         car_form = forms.CarForm(request.POST)
-        if car_form.is_valid():
+        client_form = forms.ClientForm(request.POST)
+        if car_form.is_valid() and client_form.is_valid():
             car = car_form.save()
-            client_form = forms.ClientForm(request.POST)
             client_form.instance.car = car
-            if client_form.is_valid():
-                return self.form_valid(client_form)
-            else:
-                return self.form_invalid(form=client_form)
-        return self.form_invalid(car_form=car_form)
+            return self.form_valid(client_form)
+        return self.form_invalid(form=client_form, car_form=car_form)
+
+    def form_invalid(self, **kwargs):
+        return self.render_to_response(self.get_context_data(**kwargs))
 
 
 class ClientEditView(UpdateView):
@@ -105,9 +105,9 @@ class ClientEditView(UpdateView):
             queryset = self.queryset
         argument = self.kwargs.get(self.argument)
         try:
-            obj = queryset.get()
+            obj = queryset.get(**{self.argument: argument})
         except queryset.model.DoesNotExist:
-            raise Http404(f"{queryset.model._meta.verbose_name} não encontrado!")
+            raise Http404(f"{queryset.model} não encontrado!")
         return obj
 
     def get_context_data(self, **kwargs):
@@ -116,17 +116,17 @@ class ClientEditView(UpdateView):
         return super(ClientEditView, self).get_context_data(**kwargs)
 
     def post(self, request, *args, **kwargs):
-        print(self.get_object().car)
         car_form = forms.CarForm(request.POST, instance=self.get_object().car)
         client_form = forms.ClientForm(request.POST, instance=self.get_object())
-        if car_form.is_valid():
+        if car_form.is_valid() and client_form.is_valid():
             car = car_form.save()
-            if client_form.is_valid():
-                client = client_form.save(commit=False)
-                client.car = car
-                client.save()
-                return self.form_valid(client_form)
-        return self.render_to_response(self.get_context_data(car_form=car_form, form=client_form))
+            client = client_form.save(commit=False)
+            client.car = car
+            return self.form_valid(client_form)
+        return self.form_invalid(car_form=car_form, form=client_form)
+
+    def form_invalid(self, **kwargs):
+        return self.render_to_response(self.get_context_data(**kwargs))
 
     def get_success_url(self):
         return self.request.path
