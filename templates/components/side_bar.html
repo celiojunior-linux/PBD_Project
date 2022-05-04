@@ -13,8 +13,9 @@
     <hr class="sidebar-divider my-0">
 
     <!-- Nav Item - Dashboard -->
-    <li class="nav-item">
-        <a class="nav-link" href="#">
+    {% url "home:home-view" as path %}
+    <li class="nav-item {% if path == request.path %}active{% endif %}">
+        <a class="nav-link" href="{{ path }}">
             <i class="fas fa-fw fa-home"></i>
             <span>Home</span></a>
     </li>
