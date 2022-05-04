@@ -30,3 +30,7 @@
     <a class="btn btn-sm btn-success" href="{% url "inventory:client-create" %}">Adicionar <i
             class="fa fa-plus-circle"></i></a>
 {% endblock card_footer %}
+{% block delete_message %}
+    {{ block.super }}
+    (isso eliminará também o registro de carro relacionado)
+{% endblock %}

@@ -15,7 +15,7 @@
                     </div>
                 </div>
             {% endblock %}
-            <div class="table-responsive">
+            <div class="table-responsive" style="font-size: 12px;">
                 <table class="table table-striped table-bordered" id="dataTable" style="min-width: 800px;">
                     <thead class="table-dark">
                     {% block table_head %}{% endblock %}
@@ -49,7 +49,8 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <p>Deseja realmente eliminar "<span id="deleteObject"></span>"?</p>
+                    <p>{% block delete_message %} Deseja realmente eliminar "<span id="deleteObject"></span>
+                        "? {% endblock %}</p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
@@ -67,6 +68,6 @@
             $("#deleteForm").attr("action", deleteUrl);
         }
 
-        $("#dataTable").DataTable({searching: false, pageLength: 5, lengthChange: false });
+        $("#dataTable").DataTable({searching: false, pageLength: 5, lengthChange: false});
     </script>
 {% endblock %}

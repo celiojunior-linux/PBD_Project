@@ -31,7 +31,7 @@ class Client(models.Model):
         ("DEVEDORES", "DEVEDORES"),
     ]
 
-    document = models.CharField(max_length=14, primary_key=True)
+    document = models.CharField(max_length=14, unique=True)
     name = models.CharField(max_length=100)
     address = models.CharField(max_length=100)
     rg = models.IntegerField()
@@ -43,7 +43,7 @@ class Client(models.Model):
 
 
 class Car(models.Model):
-    license_plate = models.CharField(max_length=7, primary_key=True, unique=True)
+    license_plate = models.CharField(max_length=7, unique=True)
     model = models.CharField(max_length=100)
     brand = models.CharField(max_length=100)
 

@@ -33,7 +33,6 @@ class ClientForm(forms.ModelForm):
 
 
 class CarForm(forms.ModelForm):
-
     class Meta:
         model = models.Car
         fields = "__all__"

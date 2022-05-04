@@ -19,8 +19,8 @@ urlpatterns = [
     # Client
     path("client/list/", views.ClientList.as_view(), name="client-list"),
     path("client/create/", views.ClientCreateView.as_view(), name="client-create"),
-    path("client/edit/<str:document>", views.ClientEditView.as_view(), name="client-edit"),
-    path("client/delete/<str:document>", views.ClientDeleteView.as_view(), name="client-delete"),
+    path("client/edit/<slug:document>", views.ClientEditView.as_view(), name="client-edit"),
+    path("client/delete/<slug:document>", views.ClientDeleteView.as_view(), name="client-delete"),
 
 
     # Car

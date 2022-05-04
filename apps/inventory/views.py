@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.http import Http404
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 
@@ -93,10 +94,21 @@ class ClientCreateView(CreateView, mixins.ClientCarMixin):
 
 
 class ClientEditView(UpdateView):
+    object = None
     template_name = "inventory/client/clients_edit.html"
     form_class = forms.ClientForm
     queryset = models.Client.objects.all()
-    pk_url_kwarg = "document"
+    argument = "document"
+
+    def get_object(self, queryset=None):
+        if queryset is None:
+            queryset = self.queryset
+        argument = self.kwargs.get(self.argument)
+        try:
+            obj = queryset.get()
+        except queryset.model.DoesNotExist:
+            raise Http404(f"{queryset.model._meta.verbose_name} não encontrado!")
+        return obj
 
     def get_context_data(self, **kwargs):
         if "car_form" not in kwargs:
@@ -104,17 +116,17 @@ class ClientEditView(UpdateView):
         return super(ClientEditView, self).get_context_data(**kwargs)
 
     def post(self, request, *args, **kwargs):
+        print(self.get_object().car)
         car_form = forms.CarForm(request.POST, instance=self.get_object().car)
+        client_form = forms.ClientForm(request.POST, instance=self.get_object())
         if car_form.is_valid():
-            car_form.clean()
             car = car_form.save()
-            client_form = forms.ClientForm(request.POST, instance=self.get_object())
-            client_form.instance.car = car
             if client_form.is_valid():
-                client_form.full_clean()
-                client_form.save()
-                return super(ClientEditView, self).post(request, *args, **kwargs)
-        return self.render_to_response(self.get_context_data(form=car_form))
+                client = client_form.save(commit=False)
+                client.car = car
+                client.save()
+                return self.form_valid(client_form)
+        return self.render_to_response(self.get_context_data(car_form=car_form, form=client_form))
 
     def get_success_url(self):
         return self.request.path
