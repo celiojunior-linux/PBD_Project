@@ -4,7 +4,7 @@ from django.dispatch import receiver
 
 
 class Company(models.Model):
-    cnpj = models.CharField(max_length=14, primary_key=True)
+    cnpj = models.CharField(max_length=14, unique=True)
     name = models.CharField(max_length=100)
     address = models.CharField(max_length=100)
     latitude = models.FloatField()
@@ -12,7 +12,6 @@ class Company(models.Model):
 
 
 class Employee(models.Model):
-    code = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100)
     speciality = models.CharField(max_length=100)
     document = models.CharField(max_length=14)

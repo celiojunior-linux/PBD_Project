@@ -13,28 +13,24 @@ class CompanyListView(ListView):
     template_name = "inventory/company/company_list.html"
 
 
-class CompanyCreateView(CreateView):
+class CompanyCreateView(CreateView, mixins.ModelCreateMixin):
     model = models.Company
     template_name = "inventory/company/company_edit.html"
     form_class = forms.CompanyForm
     success_url = reverse_lazy("inventory:company-list")
 
 
-class CompanyEditView(UpdateView):
+class CompanyEditView(UpdateView, mixins.ModelUpdateMixin):
+    model = models.Company
     template_name = "inventory/company/company_edit.html"
     form_class = forms.CompanyForm
     queryset = models.Company.objects.all()
-    pk_url_kwarg = "cnpj"
 
     def get_success_url(self):
         return self.request.path
 
-    def form_valid(self, form):
-        messages.success(self.request, f" \"{self.object}\" cadastrado com sucesso!")
-        return super(CompanyEditView, self).form_valid(form)
 
-
-class CompanyDeleteView(DeleteView):
+class CompanyDeleteView(DeleteView, mixins.ModelDeleteMixin):
     model = models.Company
     success_url = reverse_lazy("inventory:company-list")
     pk_url_kwarg = "cnpj"
@@ -45,27 +41,26 @@ class EmployeeListView(ListView):
     template_name = "inventory/employee/employee_list.html"
 
 
-class EmployeeCreateView(CreateView):
+class EmployeeCreateView(CreateView, mixins.ModelCreateMixin):
     model = models.Employee
     template_name = "inventory/employee/employee_edit.html"
     form_class = forms.EmployeeForm
     success_url = reverse_lazy("inventory:employee-list")
 
 
-class EmployeeEditView(UpdateView):
+class EmployeeEditView(UpdateView, mixins.ModelUpdateMixin):
+    model = models.Employee
     template_name = "inventory/employee/employee_edit.html"
     form_class = forms.EmployeeForm
     queryset = models.Employee.objects.all()
-    pk_url_kwarg = "code"
 
     def get_success_url(self):
         return self.request.path
 
 
-class EmployeeDeleteView(DeleteView):
+class EmployeeDeleteView(DeleteView, mixins.ModelDeleteMixin):
     model = models.Employee
     success_url = reverse_lazy("inventory:employee-list")
-    pk_url_kwarg = "code"
 
 
 class ClientList(ListView):
@@ -73,7 +68,7 @@ class ClientList(ListView):
     template_name = "inventory/client/clients_list.html"
 
 
-class ClientCreateView(CreateView, mixins.ClientCarMixin):
+class ClientCreateView(CreateView, mixins.ClientCarMixin, mixins.ModelCreateMixin):
     model = models.Client
     object = None
     template_name = "inventory/client/clients_edit.html"
@@ -89,11 +84,9 @@ class ClientCreateView(CreateView, mixins.ClientCarMixin):
             return self.form_valid(client_form)
         return self.form_invalid(form=client_form, car_form=car_form)
 
-    def form_invalid(self, **kwargs):
-        return self.render_to_response(self.get_context_data(**kwargs))
 
-
-class ClientEditView(UpdateView):
+class ClientEditView(UpdateView, mixins.ClientCarMixin, mixins.ModelUpdateMixin):
+    model = models.Client
     object = None
     template_name = "inventory/client/clients_edit.html"
     form_class = forms.ClientForm
@@ -124,9 +117,6 @@ class ClientEditView(UpdateView):
             client.car = car
             return self.form_valid(client_form)
         return self.form_invalid(car_form=car_form, form=client_form)
-
-    def form_invalid(self, **kwargs):
-        return self.render_to_response(self.get_context_data(**kwargs))
 
     def get_success_url(self):
         return self.request.path

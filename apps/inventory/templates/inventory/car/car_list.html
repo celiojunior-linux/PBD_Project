@@ -11,7 +11,7 @@
 {% block table_row %}
     <tr>
         <th>
-            <a class="btn btn-primary btn-sm" href="">
+            <a class="btn btn-primary btn-sm" href="{% url "inventory:client-edit" object.client.document %}">
                 {{ object.client }} <i class="fa fa-search"></i>
             </a>
         </th>

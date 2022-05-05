@@ -2,7 +2,7 @@
 {% load static %}
 {% block card_header %}
     <h3 class="text-dark">Ficha de Funcionário</h3>
-    <span>Admissão em {{ form.admission_date.value }}</span>
+    {% if form.admission_date.value %}<span>Admissão em {{ form.admission_date.value }}</span>{% endif %}
 {% endblock %}
 {% block scripts %}
     <script>
@@ -19,7 +19,7 @@
                 }
             }
 
-            $(`<img id="img_preview" alt="preview" style="width:300px; height:300px;"><br><button type="button" class="btn btn-danger my-2" id="removeImage"><i class="fa fa-trash"></i></button>`).insertAfter("#id_photo")
+            $(`<div style="width:300px; height:300px;" class="border mt-4 d-flex" ><img id="img_preview" alt="preview" class="img-fluid p-1" style="width:300px; height: 300px;"></div>`).insertAfter("#id_photo")
             $("#id_photo").change(function(){
                 loadImage(this);
             });
