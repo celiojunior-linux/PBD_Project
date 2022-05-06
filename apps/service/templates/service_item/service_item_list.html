@@ -1,26 +1,28 @@
 {% extends "crud/table_view.html" %}
-{% block view_title %}Serviços{% endblock %}
+{% block view_title %}Itens de Serviços{% endblock %}
 {% block table_head %}
     <tr>
         <th class="w-25"></th>
         <th>Código</th>
         <th>Descrição</th>
+        <th>Custo</th>
     </tr>
 {% endblock %}
 {% block table_row %}
     <tr>
         <th>
-            <a class="btn btn-sm btn-warning" href="{% url "service:service-edit" object.pk %}">Editar <i
+            <a class="btn btn-sm btn-warning" href="{% url "service:service-item-edit" object.pk %}">Editar <i
                     class="fa fa-pen"></i></a>
             <button class="btn btn-sm btn-danger" data-toggle="modal" data-target="#deleteConfirmModal"
-                    onclick="assignToDelete('{{ object }}', '{% url 'service:service-delete' object.pk %}')">Remover
+                    onclick="assignToDelete('{{ object }}', '{% url 'service:service-item-delete' object.pk %}')">Remover
                 <i class="fa fa-trash"></i></button>
         </th>
         <th>{{ object.pk }}</th>
         <td>{{ object.description }}</td>
+        <td>{{ object.cost|floatformat:2 }}</td>
     </tr>
 {% endblock %}
 {% block card_footer %}
-    <a class="btn btn-sm btn-success" href="{% url "service:service-create" %}">Adicionar <i
+    <a class="btn btn-sm btn-success" href="{% url "service:service-item-create" %}">Adicionar <i
             class="fa fa-plus-circle"></i></a>
 {% endblock card_footer %}

@@ -1,39 +1,11 @@
-from django.contrib import messages
 from django.http import Http404
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 
 from . import forms
-from . import mixins
+from ..utils import mixins
 from . import models
-
-
-class CompanyListView(ListView):
-    model = models.Company
-    template_name = "inventory/company/company_list.html"
-
-
-class CompanyCreateView(CreateView, mixins.ModelCreateMixin):
-    model = models.Company
-    template_name = "inventory/company/company_edit.html"
-    form_class = forms.CompanyForm
-    success_url = reverse_lazy("inventory:company-list")
-
-
-class CompanyEditView(UpdateView, mixins.ModelUpdateMixin):
-    model = models.Company
-    template_name = "inventory/company/company_edit.html"
-    form_class = forms.CompanyForm
-    queryset = models.Company.objects.all()
-
-    def get_success_url(self):
-        return self.request.path
-
-
-class CompanyDeleteView(DeleteView, mixins.ModelDeleteMixin):
-    model = models.Company
-    success_url = reverse_lazy("inventory:company-list")
-    pk_url_kwarg = "cnpj"
+from ..utils.views import BetterDeleteView
 
 
 class EmployeeListView(ListView):
@@ -58,7 +30,7 @@ class EmployeeEditView(UpdateView, mixins.ModelUpdateMixin):
         return self.request.path
 
 
-class EmployeeDeleteView(DeleteView, mixins.ModelDeleteMixin):
+class EmployeeDeleteView(BetterDeleteView):
     model = models.Employee
     success_url = reverse_lazy("inventory:employee-list")
 
@@ -93,16 +65,6 @@ class ClientEditView(UpdateView, mixins.ClientCarMixin, mixins.ModelUpdateMixin)
     queryset = models.Client.objects.all()
     argument = "document"
 
-    def get_object(self, queryset=None):
-        if queryset is None:
-            queryset = self.queryset
-        argument = self.kwargs.get(self.argument)
-        try:
-            obj = queryset.get(**{self.argument: argument})
-        except queryset.model.DoesNotExist:
-            raise Http404(f"{queryset.model} não encontrado!")
-        return obj
-
     def get_context_data(self, **kwargs):
         if "car_form" not in kwargs:
             kwargs["car_form"] = forms.CarForm(instance=self.get_object().car)
@@ -122,10 +84,9 @@ class ClientEditView(UpdateView, mixins.ClientCarMixin, mixins.ModelUpdateMixin)
         return self.request.path
 
 
-class ClientDeleteView(DeleteView):
+class ClientDeleteView(BetterDeleteView):
     model = models.Client
     success_url = reverse_lazy("inventory:client-list")
-    pk_url_kwarg = "document"
 
 
 class CarListView(ListView):

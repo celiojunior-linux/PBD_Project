@@ -1,13 +1,14 @@
 from django.contrib import messages
+from django.db.models import ProtectedError
+from django.http import Http404, HttpResponseRedirect
+from django.shortcuts import redirect
 from django.views.generic.base import ContextMixin
-from django.views.generic.edit import ModelFormMixin
+from django.views.generic.edit import ModelFormMixin, DeletionMixin
 
-from . import forms
+from apps.inventory import forms
 
 MESSAGE_SAVED_SUCCESSFULLY = "Registro de %s salvo com sucesso!"
-
 MESSAGE_UPDATED_SUCCESSFULLY = "Registro de %s atualizado com sucesso!"
-MESSAGE_DELETED_SUCCESSFULLY = "Registro de %s eliminado com sucesso!"
 
 MESSAGE_FAIL = "Não foi possível realizar a operação!"
 
@@ -33,11 +34,17 @@ class ModelUpdateMixin(BaseModelMixin):
         return super().form_valid(form)
 
 
-class ModelDeleteMixin(BaseModelMixin):
-    def form_valid(self, form):
-        messages.success(self.request,
-                         MESSAGE_DELETED_SUCCESSFULLY % self.model._meta.verbose_name.capitalize())
-        return super().form_valid(form)
+class ModelDeleteMixin(DeletionMixin):
+
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        success_url = self.get_success_url()
+        try:
+            self.object.delete()
+            messages.success(request, MESSAGE_DELETED_SUCCESSFULLY)
+        except ProtectedError:
+            messages.warning(request, "Operação não permitida! O registro está sendo utilizado em outros cadastros!")
+        return HttpResponseRedirect(success_url)
 
 
 class ClientCarMixin(ContextMixin):

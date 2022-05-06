@@ -1,6 +1,7 @@
 import django.forms as forms
 
 from . import models
+from ..utils.fields import DateInput
 
 
 class CompanyForm(forms.ModelForm):
@@ -10,19 +11,12 @@ class CompanyForm(forms.ModelForm):
 
 
 class EmployeeForm(forms.ModelForm):
-    admission_date = forms.DateField(
-        input_formats=['%Y-%m-%d'],
-        widget=forms.DateInput(
-            format='%Y-%m-%d',
-            attrs={
-                'type': 'date'
-            }
-        )
-    )
-
     class Meta:
         model = models.Employee
         fields = "__all__"
+        widgets = {
+            "admission_date": DateInput()
+        }
 
 
 class ClientForm(forms.ModelForm):

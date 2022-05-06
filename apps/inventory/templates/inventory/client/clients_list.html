@@ -13,10 +13,10 @@
 {% block table_row %}
     <tr>
         <th>
-            <a class="btn btn-sm btn-warning" href="{% url "inventory:client-edit" object.document %}">Editar <i
+            <a class="btn btn-sm btn-warning" href="{% url "inventory:client-edit" object.pk %}">Editar <i
                     class="fa fa-pen"></i></a>
             <button class="btn btn-sm btn-danger" data-toggle="modal" data-target="#deleteConfirmModal"
-                    onclick="assignToDelete('{{ object }}', '{% url 'inventory:client-delete' object.document %}')">Remover
+                    onclick="assignToDelete('{{ object }}', '{% url 'inventory:client-delete' object.pk %}')">Remover
                 <i class="fa fa-trash"></i></button>
         </th>
         <td>{{ object.document }}</td>

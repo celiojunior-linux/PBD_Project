@@ -35,12 +35,12 @@
             <i class="fas fa-clipboard-list"></i>
             <span>Inventário</span>
         </a>
-        <div id="collapseTwo" class="collapse {% if request.resolver_match.app_name == "inventory" %}show{% endif %}" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+        <div id="collapseTwo" class="collapse {% if request.resolver_match.app_name == "inventory" %}show{% endif %}"
+             aria-labelledby="headingTwo" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-                {% url "inventory:company-list" as path %}
-                <a class="collapse-item {% if path == request.path %}active{% endif %}" href="{{ path }}">Entidades</a>
                 {% url "inventory:employee-list" as path %}
-                <a class="collapse-item {% if path == request.path %}active{% endif %}" href="{{ path }}">Funcionarios</a>
+                <a class="collapse-item {% if path == request.path %}active{% endif %}"
+                   href="{{ path }}">Funcionarios</a>
                 {% url "inventory:client-list" as path %}
                 <a class="collapse-item {% if path == request.path %}active{% endif %}" href="{{ path }}">Clientes</a>
                 {% url "inventory:car-list" as path %}
@@ -55,11 +55,20 @@
             <i class="fas fa-fw fa-wrench"></i>
             <span>Serviço</span>
         </a>
-        <div id="collapseUtilities" class="collapse {% if request.resolver_match.app_name == "service" %}show{% endif %}" aria-labelledby="headingUtilities"
+        <div id="collapseUtilities"
+             class="collapse {% if request.resolver_match.app_name == "service" %}show{% endif %}"
+             aria-labelledby="headingUtilities"
              data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-            {% url "service:service-list" as path %}
-                <a class="collapse-item {% if path == request.path %}active{% endif %}" href="{{ path }}">Ordens de Serviço</a>
+                {% url "service:service-item-list" as path %}
+                <a class="collapse-item {% if path == request.path %}active{% endif %}" href="{{ path }}">Itens de
+                    Serviço</a>
+                {% url "service:service-list" as path %}
+                <a class="collapse-item {% if path == request.path %}active{% endif %}" href="{{ path }}">Serviços</a>
+                {% url "service:service-order-list" as path %}
+                <a class="collapse-item {% if path == request.path %}active{% endif %}" href="{{ path }}">Ordens de
+                    Serviço</a>
+
             </div>
         </div>
     </li>
@@ -72,10 +81,11 @@
         Sistema
     </div>
 
-    <li class="nav-item">
-        <a class="nav-link" href="#">
-            <i class="fas fa-fw fa-chart-area"></i>
-            <span>Configurações</span></a>
+    {% url "system:company-settings" as path %}
+    <li class="nav-item {% if path == request.path %}active{% endif %}">
+        <a class="nav-link" href="{{ path }}">
+            <i class="fas fa-fw fa-building"></i>
+            <span>Empresa</span></a>
     </li>
 
     <!-- Divider -->

@@ -1,0 +1,79 @@
+{% extends "crud/create_view.html" %}
+{% load crispy_forms_filters %}
+{% load crispy_forms_tags %}
+{% block card_header %}<h3>Ordem de Serviço</h3>{% endblock %}
+{% block card_body %}
+    <div id="accordion">
+        <div class="card my-2">
+            <div class="card-header" id="headingOne">
+                <h5 class="mb-0">
+                    <a class="btn btn-link" data-toggle="collapse" data-target="#collapseData" aria-expanded="true"
+                       aria-controls="collapseOne">
+                        Dados
+                    </a>
+                </h5>
+            </div>
+            <div id="collapseData" class="collapse" aria-labelledby="headingOne">
+                <div class="card-body">
+                    {{ block.super }}
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header" id="headingTwo">
+                <h5 class="mb-0">
+                    <a class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseServices"
+                       aria-expanded="false" aria-controls="collapseTwo">
+                        Serviço: {{ object.service }}
+                    </a>
+                </h5>
+            </div>
+            <div id="collapseServices" class="collapse show" aria-labelledby="collapseServices">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered text-center">
+                            <thead class="table-dark">
+                            <tr>
+                                <th>Item de Serviço</th>
+                                <th>Responsável</th>
+                                <th>Deletar</th>
+                                <th>Sub-Total</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {{ service_item_order_form.management_form }}
+                            {% for form in service_item_order_form %}
+                                {% for hidden in form.hidden_fields %}
+                                    {{ hidden }}
+                                {% endfor %}
+                                <tr class="table-row">
+                                    {% for field in form.visible_fields %}
+                                        <td>{{ field }}</td>
+                                    {% endfor %}
+                                    <th>{{ form.instance.service_item.cost|floatformat:2 }}</th>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                            <tfoot>
+                            <tr>
+                                <th colspan="3">Total</th>
+                                <th>{{ total|floatformat:2 }}</th>
+                            </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
+{% block card_footer %}
+    <button type="submit" class="btn btn-success">Atualizar <i class="fa fa-edit"></i></button>
+{% endblock %}
+{% block scripts %}
+    <script type="text/javascript">
+        $(".table-row select").addClass("form-control form-control-sm")
+    </script>
+{% endblock %}

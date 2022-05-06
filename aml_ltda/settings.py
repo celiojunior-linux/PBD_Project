@@ -36,11 +36,16 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'apps.authentication',
+
+    'tempus_dominus',
+    'django_extensions',
     'crispy_forms',
+
     'apps.service.apps.ServiceConfig',
     'apps.inventory.apps.InventoryConfig',
+    'apps.system.apps.SystemConfig',
     'apps.home.apps.HomeConfig',
-    'django_extensions'
+
 ]
 
 MIDDLEWARE = [
@@ -109,7 +114,7 @@ LANGUAGE_CODE = 'pt-br'
 TIME_ZONE = 'America/Recife'
 
 USE_I18N = True
-
+USE_L10N = False
 USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
