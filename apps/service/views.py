@@ -1,10 +1,13 @@
+from django.core.exceptions import PermissionDenied
 from django.db.models import Sum, Q
-from django.urls import reverse_lazy
+from django.http import HttpResponse, HttpResponseRedirect
+from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, CreateView, UpdateView
 
 from . import models, forms
 from apps.utils.mixins import ModelCreateMixin, ModelUpdateMixin
-from .models import ServiceItem
+from .models import ServiceItem, ServiceOrder
+from ..finance.models import ServiceInvoice
 from ..utils.views import BetterDeleteView
 
 
@@ -131,6 +134,15 @@ class ServiceOrderEditView(UpdateView, ModelUpdateMixin):
         )
         return super(ServiceOrderEditView, self).get_context_data(**kwargs)
 
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        if "invoice" in request.POST:
+            if not self.object.has_active_invoice:
+                return self.generate_invoice()
+            else:
+                raise PermissionDenied()
+        return super(ServiceOrderEditView, self).post(request, *args, **kwargs)
+
     def form_valid(self, form):
         if form.is_valid():
             self.object = form.save()
@@ -140,6 +152,22 @@ class ServiceOrderEditView(UpdateView, ModelUpdateMixin):
             if service_item_order_form.is_valid():
                 service_item_order_form.save()
         return super(ServiceOrderEditView, self).form_valid(form)
+
+    def generate_invoice(self):
+        service_invoice = ServiceInvoice.objects.create(
+            service_order=self.object,
+            company_document=self.object.company.cnpj,
+            company_name=self.object.company.name,
+            company_registration=self.object.company.registration,
+            client_name=self.object.client.name,
+            client_document=self.object.client.document,
+            client_address=self.object.client.address,
+            service_description=self.object.service.description,
+            total=self.object.total
+        )
+        service_invoice.save()
+        return HttpResponseRedirect(service_invoice.get_absolute_url())
+
 
 
 class ServiceOrderDeleteView(BetterDeleteView):

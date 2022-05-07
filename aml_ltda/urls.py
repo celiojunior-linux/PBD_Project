@@ -9,7 +9,8 @@ urlpatterns = [
     path('inventory/', include('apps.inventory.urls')),
     path('service/', include('apps.service.urls')),
     path('system/', include('apps.system.urls')),
-    path('mural/', include('apps.mural.urls'))
+    path('mural/', include('apps.mural.urls')),
+    path('finance/', include('apps.finance.urls')),
 ]
 
 if settings.DEBUG:

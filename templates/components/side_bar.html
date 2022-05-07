@@ -91,9 +91,9 @@
              aria-labelledby="headingUtilities"
              data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-                {% url "service:service-item-list" as path %}
+                {% url "finance:invoice-list" as path %}
                 <a class="collapse-item {% if path == request.path %}active{% endif %}"
-                   href="{{ path }}">Faturamento</a>
+                   href="{{ path }}">Faturamentos</a>
                 {% url "service:service-list" as path %}
             </div>
         </div>

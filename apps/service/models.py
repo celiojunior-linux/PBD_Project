@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Sum
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.urls import reverse
@@ -35,13 +36,11 @@ class ServiceItem(models.Model):
 
 
 class ResolvedServiceOrderManager(models.Manager):
-
     def get_queryset(self):
         return super().get_queryset().filter(departure_date__isnull=False)
 
 
 class NotResolvedServiceOrderManager(models.Manager):
-
     def get_queryset(self):
         return super().get_queryset().filter(departure_date__isnull=True)
 
@@ -61,7 +60,7 @@ class ServiceOrder(models.Model):
         default=Company.object,
     )
     sponsor_employee = models.ForeignKey(
-        verbose_name="funcionário designado",
+        verbose_name="funcionário responsável",
         to="inventory.Employee",
         on_delete=models.PROTECT,
     )
@@ -77,6 +76,21 @@ class ServiceOrder(models.Model):
     departure_date = models.DateField(
         verbose_name="data de saída", blank=True, null=True
     )
+
+    @property
+    def total(self):
+        total = self.serviceitemorder_set.aggregate(total=Sum("service_item__cost"))[
+            "total"
+        ]
+        return total
+
+    @property
+    def has_active_invoice(self):
+        return self.serviceinvoice_set.filter(canceled=False).exists()
+
+    @property
+    def get_active_invoice(self):
+        return self.serviceinvoice_set.filter(canceled=False).first()
 
     def get_absolute_url(self):
         return reverse("service:service-order-edit", kwargs={"pk": self.pk})
