@@ -51,7 +51,7 @@ class Employee(AbstractBaseUser):
         verbose_name="data de admissão", default=timezone.now
     )
     salary = models.FloatField(verbose_name="salário")
-    photo = models.ImageField(verbose_name="foto", upload_to="profiles")
+    photo = models.ImageField(verbose_name="foto", upload_to="profiles", blank=True, null=True)
 
     USERNAME_FIELD = "document"
 
