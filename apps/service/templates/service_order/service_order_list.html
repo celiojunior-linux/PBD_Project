@@ -1,13 +1,20 @@
 {% extends "layout/base.html" %}
+{% load crispy_forms_tags %}
+{% load crispy_forms_filters %}
 {% load static %}
 {% block content %}
-    <div class="d-flex justify-content-between align-items-center my-2 shadow p-4">
-        <div>
-            <h3>Ordens de Serviço</h3>
+    <div class="my-2 shadow p-4">
+        <div class="d-flex justify-content-between">
+            <div>
+                <h3>Ordens de Serviço</h3>
+            </div>
+            <div>
+                <a class="btn btn-sm btn-success" href="{% url "service:service-order-create" %}">Adicionar <i
+                        class="fa fa-plus-circle"></i></a>
+            </div>
         </div>
-        <div>
-            <a class="btn btn-sm btn-success" href="{% url "service:service-order-create" %}">Adicionar <i
-                    class="fa fa-plus-circle"></i></a>
+        <div class="">
+            {% crispy service_order_filters %}
         </div>
     </div>
     <div class="row">
@@ -26,11 +33,18 @@
                     <div class="mt-5">
                         <h3 class="heading">{{ service_order.service.description }}</h3>
                         <div>Cliente: {{ service_order.client.name }}</div>
+                        <div>Carro: {{ service_order.client.car.model }}
+                            [{{ service_order.client.car.license_plate }}]
+                        </div>
                         <div class="mt-5">
-                            <span>Andamento</span>
+                            {% if service_order.departure_date != None %}
+                                <span class="badge badge-success">Concluído</span>
+                            {% else %}
+                                <span class="badge badge-warning">Em andamento</span>
+                            {% endif %}
                             <div class="progress">
-                                <div class="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="50"
-                                     aria-valuemin="0" aria-valuemax="100"></div>
+                                <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0"
+                                     aria-valuemax="100" style="width: {{ service_order.concluded.0 }}%;"></div>
                             </div>
                             <div class="mt-3">
                                 <button class="btn btn-sm btn-primary"><i class="fa fa-search"></i> Detalhes
@@ -39,11 +53,19 @@
                                    href="{% url "service:service-order-edit" service_order.pk %}"><i
                                         class="fa fa-pen"></i> Editar</a>
                                 {#                            <button class="btn btn-sm btn-outline-primary" onclick="alert('Impressão indisponível no momento')"><i class="fa fa-print"></i> Imprimir</button>#}
-                                <button class="btn btn-sm btn-danger" data-toggle="modal" data-target="#deleteConfirmModal" onclick="assignToDelete('{{ service_order }}', '{% url "service:service-order-delete" service_order.pk %}')"><i class="fa fa-trash"></i> Deletar</button>
+                                <button class="btn btn-sm btn-danger" data-toggle="modal"
+                                        data-target="#deleteConfirmModal"
+                                        onclick="assignToDelete('{{ service_order }}', '{% url "service:service-order-delete" service_order.pk %}')">
+                                    <i class="fa fa-trash"></i> Deletar
+                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
+        {% empty %}
+            <div class="col-12">
+                <small class="text-center">Nenhum registro encontrado</small>
             </div>
         {% endfor %}
     </div>

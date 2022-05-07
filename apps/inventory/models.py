@@ -1,21 +1,21 @@
-from django.apps import apps
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.db import models
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
 from django.utils import timezone
-from django.contrib.auth.models import UserManager
 
 
 class Company(models.Model):
     class Meta:
         verbose_name = "empresa"
 
-    cnpj = models.CharField(verbose_name="CNPJ", max_length=14, unique=True)
     name = models.CharField(verbose_name="nome", max_length=100)
+    cnpj = models.CharField(verbose_name="CNPJ", max_length=14, unique=True)
+    registration = models.CharField(verbose_name="inscrição estadual", max_length=255)
     address = models.CharField(verbose_name="endereço", max_length=100)
     latitude = models.FloatField()
     longitude = models.FloatField()
+    distance_tolerance = models.FloatField(verbose_name="tolerância de distância (km)")
 
     @classmethod
     def object(cls):
@@ -27,6 +27,7 @@ class Company(models.Model):
                 "address": "Endereço da Empresa",
                 "latitude": 0,
                 "longitude": 0,
+                "distance_tolerance": 15
             },
         )[0]
 
@@ -43,8 +44,8 @@ class Employee(AbstractBaseUser):
         verbose_name = "Funcionário"
 
     name = models.CharField(verbose_name="nome", max_length=100)
-    speciality = models.CharField(verbose_name="especialidade", max_length=100, unique=True)
-    document = models.CharField(verbose_name="CPF", max_length=11)
+    speciality = models.CharField(verbose_name="especialidade", max_length=100)
+    document = models.CharField(verbose_name="CPF", max_length=11, unique=True)
     rg = models.PositiveIntegerField(verbose_name="RG")
     phone_number = models.CharField(verbose_name="telefone", max_length=11)
     admission_date = models.DateField(

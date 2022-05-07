@@ -34,7 +34,23 @@ class ServiceItem(models.Model):
         return f"[{self.pk}] {self.description} {self.cost:.2f}"
 
 
+class ResolvedServiceOrderManager(models.Manager):
+
+    def get_queryset(self):
+        return super().get_queryset().filter(departure_date__isnull=False)
+
+
+class NotResolvedServiceOrderManager(models.Manager):
+
+    def get_queryset(self):
+        return super().get_queryset().filter(departure_date__isnull=True)
+
+
 class ServiceOrder(models.Model):
+    objects = models.Manager()
+    resolved = ResolvedServiceOrderManager()
+    not_resolved = NotResolvedServiceOrderManager()
+
     class Meta:
         verbose_name = "ordem de serviço"
 
@@ -68,6 +84,20 @@ class ServiceOrder(models.Model):
     def __str__(self):
         return f"[{self.pk}] {self.service.description}"
 
+    @property
+    def concluded(self):
+        all_services = self.serviceitemorder_set.all()
+        finished_services = all_services.filter(finished=True)
+
+        total = all_services.count()
+        finished = finished_services.count()
+        try:
+            percentual = finished / total * 100
+        except ZeroDivisionError:
+            percentual = 0
+        has_concluded = finished == total
+        return percentual, has_concluded
+
 
 class ServiceItemOrder(models.Model):
     service_order = models.ForeignKey(
@@ -81,6 +111,7 @@ class ServiceItemOrder(models.Model):
         to="inventory.Employee",
         on_delete=models.PROTECT,
     )
+    finished = models.BooleanField(verbose_name="finalizado", default=False)
 
 
 @receiver(post_save, sender=ServiceOrder)

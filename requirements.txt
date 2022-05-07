@@ -7,3 +7,4 @@ pydotplus==2.0.2
 pyparsing==3.0.8
 sqlparse==0.4.2
 tzdata==2022.1
+geopy~=2.2.0
