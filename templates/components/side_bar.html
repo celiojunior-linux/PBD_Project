@@ -50,14 +50,14 @@
     </li>
 
     <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseModules"
            aria-expanded="true" aria-controls="collapseUtilities">
             <i class="fas fa-fw fa-wrench"></i>
             <span>Serviço</span>
         </a>
-        <div id="collapseUtilities"
+        <div id="collapseModules"
              class="collapse {% if request.resolver_match.app_name == "service" %}show{% endif %}"
-             aria-labelledby="headingUtilities"
+             aria-labelledby="headingModules"
              data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 {% url "service:service-item-list" as path %}
@@ -69,6 +69,24 @@
                 <a class="collapse-item {% if path == request.path %}active{% endif %}" href="{{ path }}">Ordens de
                     Serviço</a>
 
+            </div>
+        </div>
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseFinance"
+           aria-expanded="true" aria-controls="collapseUtilities">
+            <i class="fas fa-fw fa-money-bill"></i>
+            <span>Financeiro</span>
+        </a>
+        <div id="collapseFinance"
+             class="collapse {% if request.resolver_match.app_name == "finance" %}show{% endif %}"
+             aria-labelledby="headingUtilities"
+             data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                {% url "service:service-item-list" as path %}
+                <a class="collapse-item {% if path == request.path %}active{% endif %}" href="{{ path }}">Faturamento</a>
+                {% url "service:service-list" as path %}
             </div>
         </div>
     </li>
