@@ -22,7 +22,7 @@ class EmployeeForm(forms.ModelForm):
         }
         exclude = ["last_login"]
 
-    field_order = ["name", "speciality", "document", "password", ]
+    field_order = ["photo", "name", "speciality", "document", "password"]
 
 
 class EmployeeEditForm(forms.ModelForm):
@@ -34,6 +34,8 @@ class EmployeeEditForm(forms.ModelForm):
             "password": forms.TextInput(attrs={"type": "password"}),
         }
         exclude = ["password", "last_login"]
+
+    field_order = ["photo"]
 
 
 class ClientForm(forms.ModelForm):
