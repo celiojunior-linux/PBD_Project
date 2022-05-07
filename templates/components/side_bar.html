@@ -49,6 +49,13 @@
         </div>
     </li>
 
+    {% url "mural:employee" as path %}
+    <li class="nav-item {% if path == request.path %}active{% endif %}">
+        <a class="nav-link" href="{{ path }}">
+            <i class="fas fa-fw fa-people-carry"></i>
+            <span>Mural de Funcionários</span></a>
+    </li>
+
     <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseModules"
            aria-expanded="true" aria-controls="collapseUtilities">
@@ -85,7 +92,8 @@
              data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 {% url "service:service-item-list" as path %}
-                <a class="collapse-item {% if path == request.path %}active{% endif %}" href="{{ path }}">Faturamento</a>
+                <a class="collapse-item {% if path == request.path %}active{% endif %}"
+                   href="{{ path }}">Faturamento</a>
                 {% url "service:service-list" as path %}
             </div>
         </div>
@@ -105,6 +113,7 @@
             <i class="fas fa-fw fa-building"></i>
             <span>Empresa</span></a>
     </li>
+
 
     <!-- Divider -->
     <hr class="sidebar-divider d-none d-md-block">

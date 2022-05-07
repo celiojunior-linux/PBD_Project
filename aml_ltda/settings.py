@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "apps.system.apps.SystemConfig",
     "apps.home.apps.HomeConfig",
     "apps.finance.apps.FinanceConfig",
+    'apps.mural.apps.MuralConfig',
 ]
 
 MIDDLEWARE = [

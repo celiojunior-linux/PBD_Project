@@ -17,7 +17,7 @@
                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <span class="mr-2 d-none d-lg-inline text-gray-600 small">{{ request.user.name }}</span>
                 <img class="img-profile rounded-circle" alt="profile"
-                     src="{% if request.user.photo %}{{ request.user.photo.url }}{% else %}{% static "img/profile.png" %}{% endif %}">
+                     src="{% if request.user.photo %}{{ request.user.photo.url }}{% else %}{% static "img/default_profile.jpeg" %}{% endif %}">
             </a>
             <!-- Dropdown - User Information -->
             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
