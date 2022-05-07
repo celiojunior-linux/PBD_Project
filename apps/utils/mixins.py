@@ -34,19 +34,6 @@ class ModelUpdateMixin(BaseModelMixin):
         return super().form_valid(form)
 
 
-class ModelDeleteMixin(DeletionMixin):
-
-    def delete(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        success_url = self.get_success_url()
-        try:
-            self.object.delete()
-            messages.success(request, MESSAGE_DELETED_SUCCESSFULLY)
-        except ProtectedError:
-            messages.warning(request, "Operação não permitida! O registro está sendo utilizado em outros cadastros!")
-        return HttpResponseRedirect(success_url)
-
-
 class ClientCarMixin(ContextMixin):
 
     def get_context_data(self, **kwargs):
