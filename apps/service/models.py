@@ -8,6 +8,9 @@ from apps.inventory.models import Company
 
 
 class Service(models.Model):
+    class Meta:
+        verbose_name = "serviço"
+
     description = models.CharField(verbose_name="descrição", max_length=100)
     service_items = models.ManyToManyField(
         verbose_name="itens",
@@ -21,6 +24,9 @@ class Service(models.Model):
 
 
 class ServiceItem(models.Model):
+    class Meta:
+        verbose_name = "item de serviço"
+
     description = models.CharField(verbose_name="descrição", max_length=100)
     cost = models.FloatField(verbose_name="custo")
 
@@ -29,6 +35,9 @@ class ServiceItem(models.Model):
 
 
 class ServiceOrder(models.Model):
+    class Meta:
+        verbose_name = "ordem de serviço"
+
     company = models.ForeignKey(
         verbose_name="Empresa",
         to="inventory.Company",
@@ -55,6 +64,9 @@ class ServiceOrder(models.Model):
 
     def get_absolute_url(self):
         return reverse("service:service-order-edit", kwargs={"pk": self.pk})
+
+    def __str__(self):
+        return f"[{self.pk}] {self.service.description}"
 
 
 class ServiceItemOrder(models.Model):

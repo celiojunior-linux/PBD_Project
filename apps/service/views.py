@@ -1,10 +1,9 @@
 from django.db.models import Sum
-from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+from django.views.generic import ListView, CreateView, UpdateView
 
 from . import models, forms
-from apps.utils.mixins import ModelCreateMixin, ModelUpdateMixin, ModelDeleteMixin
+from apps.utils.mixins import ModelCreateMixin, ModelUpdateMixin
 from .models import ServiceItem
 from ..utils.views import BetterDeleteView
 

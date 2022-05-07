@@ -1,35 +1,35 @@
 {% extends "layout/base.html" %}
 {% block body %}
-    <div class="container">
+    <div class="container-fluid">
 
-        <!-- Outer Row -->
         <div class="row justify-content-center">
-
             <div class="col-xl-10 col-lg-12 col-md-9">
-
-                <div class="card o-hidden border-0 shadow-lg my-5" style="height: 70vh;">
+                <div class="card o-hidden border-0 shadow-lg my-5" style="height: 80vh;">
                     <div class="card-body p-0">
-                        <!-- Nested Row within Card Body -->
                         <div class="row h-100">
                             <div class="col-lg-6 d-none d-lg-block bg-login-image"></div>
                             <div class="col-lg-6">
                                 <div class="p-5">
                                     <div class="text-center">
+                                        <i class="fa fa-car-alt" style="font-size: 96px;"></i>
                                         <h1 class="h4 text-gray-900 mb-4">Seja Bem-Vindo!</h1>
                                     </div>
-                                    <form class="user">
+                                    <div style="min-height: 64px;">
+                                        {% include "components/messages.html" %}
+                                    </div>
+                                    <form class="user" method="post">
+                                        {% csrf_token %}
                                         <div class="form-group">
-                                            <input type="email" class="form-control form-control-user"
-                                                id="exampleInputEmail" aria-describedby="emailHelp"
-                                                placeholder="CPF ou código do funcionário">
+                                            <input type="text" name="username" class="form-control form-control-user"
+                                                placeholder="CPF do funcionário" required>
                                         </div>
                                         <div class="form-group">
-                                            <input type="password" class="form-control form-control-user"
-                                                id="exampleInputPassword" placeholder="Senha">
+                                            <input type="password" name="password" class="form-control form-control-user"
+                                                placeholder="Senha" required>
                                         </div>
-                                        <a href="#" class="btn btn-dark btn-user btn-block">
+                                        <button type="submit" class="btn btn-dark btn-user btn-block">
                                             Login
-                                        </a>
+                                        </button>
                                     </form>
                                 </div>
                             </div>

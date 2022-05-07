@@ -9,14 +9,31 @@ class CompanyForm(forms.ModelForm):
         model = models.Company
         fields = "__all__"
 
+    field_order = ["name", "speciality", "document"]
+
 
 class EmployeeForm(forms.ModelForm):
     class Meta:
         model = models.Employee
         fields = "__all__"
         widgets = {
-            "admission_date": DateInput()
+            "admission_date": DateInput(),
+            "password": forms.TextInput(attrs={"type": "password"}),
         }
+        exclude = ["last_login"]
+
+    field_order = ["name", "speciality", "document", "password", ]
+
+
+class EmployeeEditForm(forms.ModelForm):
+    class Meta:
+        model = models.Employee
+        fields = "__all__"
+        widgets = {
+            "admission_date": DateInput(),
+            "password": forms.TextInput(attrs={"type": "password"}),
+        }
+        exclude = ["password", "last_login"]
 
 
 class ClientForm(forms.ModelForm):

@@ -1,9 +1,10 @@
-from datetime import datetime
-
+from django.apps import apps
+from django.contrib.auth.base_user import AbstractBaseUser
 from django.db import models
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
 from django.utils import timezone
+from django.contrib.auth.models import UserManager
 
 
 class Company(models.Model):
@@ -37,14 +38,13 @@ class Company(models.Model):
         return f"[{self.id}] {self.cnpj} - {self.name}"
 
 
-class Employee(models.Model):
+class Employee(AbstractBaseUser):
     class Meta:
         verbose_name = "Funcionário"
 
     name = models.CharField(verbose_name="nome", max_length=100)
-    speciality = models.CharField(verbose_name="especialidade", max_length=100)
+    speciality = models.CharField(verbose_name="especialidade", max_length=100, unique=True)
     document = models.CharField(verbose_name="CPF", max_length=11)
-    # password = models.CharField(max_length=100)
     rg = models.PositiveIntegerField(verbose_name="RG")
     phone_number = models.CharField(verbose_name="telefone", max_length=11)
     admission_date = models.DateField(
@@ -53,12 +53,18 @@ class Employee(models.Model):
     salary = models.FloatField(verbose_name="salário")
     photo = models.ImageField(verbose_name="foto", upload_to="profiles")
 
+    USERNAME_FIELD = "document"
+
     def __str__(self):
         return f"[{self.id}] {self.name}"
 
     def delete(self, using=None, keep_parents=False):
         self.photo.storage.delete(self.photo.name)
         super().delete()
+
+    @property
+    def is_authenticated(self):
+        return True
 
 
 class Client(models.Model):

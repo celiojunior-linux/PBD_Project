@@ -23,7 +23,7 @@ class EmployeeCreateView(CreateView, mixins.ModelCreateMixin):
 class EmployeeEditView(UpdateView, mixins.ModelUpdateMixin):
     model = models.Employee
     template_name = "inventory/employee/employee_edit.html"
-    form_class = forms.EmployeeForm
+    form_class = forms.EmployeeEditForm
     queryset = models.Employee.objects.all()
 
     def get_success_url(self):
