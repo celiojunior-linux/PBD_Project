@@ -37,7 +37,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'apps.authentication',
 
-    'tempus_dominus',
     'django_extensions',
     'crispy_forms',
 
@@ -56,6 +55,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'apps.utils.middlewares.login_middleware.LoginMiddleware',
 ]
 
 ROOT_URLCONF = 'aml_ltda.urls'
