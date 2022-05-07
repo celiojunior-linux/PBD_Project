@@ -62,6 +62,24 @@ class ServiceOrderEditForm(forms.ModelForm):
         fields = "__all__"
         widgets = {"departure_date": DateInput(), "entrance_date": DateInput()}
 
+    def clean_departure_date(self):
+        entrance_date = self.cleaned_data["entrance_date"]
+        departure_date = self.cleaned_data["departure_date"]
+
+        if departure_date and departure_date < entrance_date:
+            raise ValidationError("Data de saída menor que a data de entrada.")
+
+        if departure_date and not all(
+            map(
+                lambda service_item: service_item.finished,
+                self.instance.serviceitemorder_set.all(),
+            )
+        ):
+            self.fields["departure_date"].widget.attrs["value"] = None
+            self.add_error("departure_date", "Todos os itens de serviço devem estar concluídos.")
+
+        return departure_date
+
 
 class ServiceOrderFilter(forms.Form):
     client_car = forms.CharField(

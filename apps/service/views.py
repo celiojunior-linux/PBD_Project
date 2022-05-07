@@ -131,13 +131,15 @@ class ServiceOrderEditView(UpdateView, ModelUpdateMixin):
         )
         return super(ServiceOrderEditView, self).get_context_data(**kwargs)
 
-    def post(self, request, *args, **kwargs):
-        service_item_order_form = forms.ServiceItemOrderForm(
-            self.request.POST, instance=self.get_object()
-        )
-        if service_item_order_form.is_valid():
-            service_item_order_form.save()
-        return super(ServiceOrderEditView, self).post(request, *args, **kwargs)
+    def form_valid(self, form):
+        if form.is_valid():
+            self.object = form.save()
+            service_item_order_form = forms.ServiceItemOrderForm(
+                self.request.POST, instance=self.object
+            )
+            if service_item_order_form.is_valid():
+                service_item_order_form.save()
+        return super(ServiceOrderEditView, self).form_valid(form)
 
 
 class ServiceOrderDeleteView(BetterDeleteView):
