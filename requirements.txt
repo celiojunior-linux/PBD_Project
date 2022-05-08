@@ -7,6 +7,7 @@ django-extensions==3.1.5
 django-heroku==0.3.1
 geographiclib==1.52
 geopy==2.2.0
+gunicorn==20.1.0
 Pillow==9.1.0
 psycopg2==2.9.3
 pydotplus==2.0.2
