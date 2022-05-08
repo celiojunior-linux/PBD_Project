@@ -41,15 +41,18 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "apps.authentication",
+
     "django_extensions",
     "crispy_forms",
-    "apps.service.apps.ServiceConfig",
-    "apps.inventory.apps.InventoryConfig",
-    "apps.system.apps.SystemConfig",
-    "apps.home.apps.HomeConfig",
-    "apps.finance.apps.FinanceConfig",
-    "apps.mural.apps.MuralConfig",
+    "captcha",
+
+    "apps.authentication",
+    "apps.service",
+    "apps.inventory",
+    "apps.system",
+    "apps.home",
+    "apps.finance",
+    "apps.mural",
 ]
 
 MIDDLEWARE = [
