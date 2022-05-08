@@ -1,1 +1,1 @@
-web: gunicorn --bind 0.0.0.0:$PORT aml_ltda:app
+web: gunicorn aml_ltda.wsgi --log-file -
