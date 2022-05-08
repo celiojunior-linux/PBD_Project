@@ -1,1 +1,1 @@
-web: python manage.py collectstatic --no-input; gunicorn aml_ltda.wsgi --log-file - --log-level debug
+web: gunicorn aml_ld.wsgi --log-file -
