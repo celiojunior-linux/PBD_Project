@@ -1,0 +1,36 @@
+{% extends "crud/table_view.html" %}
+{% block view_title %}Clientes{% endblock %}
+{% block table_head %}
+    <tr>
+        <th class="w-25"></th>
+        <th>CPF/CNPJ</th>
+        <th>Nome</th>
+        <th>Endereço</th>
+        <th>Telefone</th>
+        <th>Categoria</th>
+    </tr>
+{% endblock %}
+{% block table_row %}
+    <tr>
+        <th>
+            <a class="btn btn-sm btn-warning" href="{% url "inventory:client-edit" object.pk %}">Editar <i
+                    class="fa fa-pen"></i></a>
+            <button class="btn btn-sm btn-danger" data-toggle="modal" data-target="#deleteConfirmModal"
+                    onclick="assignToDelete('{{ object }}', '{% url 'inventory:client-delete' object.pk %}')">Remover
+                <i class="fa fa-trash"></i></button>
+        </th>
+        <td>{{ object.document }}</td>
+        <td>{{ object.name }}</td>
+        <td>{{ object.address }}</td>
+        <td>{{ object.phone_number }}</td>
+        <td>{{ object.category }}</td>
+    </tr>
+{% endblock %}
+{% block card_footer %}
+    <a class="btn btn-sm btn-success" href="{% url "inventory:client-create" %}">Adicionar <i
+            class="fa fa-plus-circle"></i></a>
+{% endblock card_footer %}
+{% block delete_message %}
+    {{ block.super }}
+    (isso eliminará também o registro de carro relacionado)
+{% endblock %}

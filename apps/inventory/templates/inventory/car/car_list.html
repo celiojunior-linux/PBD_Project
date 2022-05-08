@@ -1,0 +1,22 @@
+{% extends "crud/table_view.html" %}
+{% block view_title %}Automóveis{% endblock %}
+{% block table_head %}
+    <tr>
+        <th class="w-25">Cliente</th>
+        <th>Placa</th>
+        <th>Modelo</th>
+        <th>Marca</th>
+    </tr>
+{% endblock %}
+{% block table_row %}
+    <tr>
+        <th>
+            <a class="btn btn-primary btn-sm" href="{% url "inventory:client-edit" object.client.pk %}">
+                {{ object.client }} <i class="fa fa-search"></i>
+            </a>
+        </th>
+        <td>{{ object.license_plate }}</td>
+        <td>{{ object.model }}</td>
+        <td>{{ object.brand }}</td>
+    </tr>
+{% endblock %}

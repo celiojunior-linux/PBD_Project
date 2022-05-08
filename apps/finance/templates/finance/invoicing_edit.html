@@ -1,0 +1,50 @@
+{% extends "crud/create_view.html" %}
+{% block card_header %}
+    <h3>Nota Fiscal de Serviço</h3>
+{% endblock %}
+{% block card_body %}
+    <div class="bg-white border p-4">
+        <small>Nota Eletrônica de Serviços Prestados</small>
+        <div class="mt-2">
+            <h4>Dados do Prestador</h4>
+            <p class="border-bottom"><b>Razão social:</b> {{ object.company_name }}</p>
+            <p class="border-bottom"><b>CNPJ:</b> {{ object.company_document }}</p>
+            <p class="border-bottom"><b>Insc. Estadual:</b> {{ object.company_registration }}</p>
+        </div>
+        <div class="mt-5">
+            <h4>Dados do Tomador</h4>
+            <p class="border-bottom"><b>Nome:</b> {{ object.client_name }}</p>
+            <p class="border-bottom"><b>CPF/CNPJ:</b> {{ object.client_document }}</p>
+            <p class="border-bottom"><b>Endereço:</b> {{ object.client_address }}</p>
+        </div>
+        <div class="mt-5">
+            <h4>Serviço Prestado</h4>
+            <p><b>Descrição:</b> {{ object.service_description }}</p>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Item de Serviço</th>
+                    <th class="text-right">Sub-Total R$</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for invoice_service_item in object.invoiceserviceitem_set.all %}
+                    <tr>
+                        <td>{{ invoice_service_item.description }}</td>
+                        <td class="text-right">{{ invoice_service_item.cost|floatformat:2 }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+                <tfoot>
+                <tr>
+                    <th>Total R$</th>
+                    <th class="text-right">{{ object.total|floatformat:2 }}</th>
+                </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+    <div class="mt-5">
+        {{ block.super }}
+    </div>
+{% endblock %}

@@ -1,0 +1,125 @@
+{% load static %}
+<ul class="navbar-nav bg-gradient-dark sidebar sidebar-dark accordion" id="accordionSidebar">
+
+    <!-- Sidebar - Brand -->
+    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="#">
+        <div class="sidebar-brand-icon rotate-n-15">
+            <i class="fas fa-car-side"></i>
+        </div>
+        <div class="sidebar-brand-text mx-3">Auto Mecânica</div>
+    </a>
+
+    <!-- Divider -->
+    <hr class="sidebar-divider my-0">
+
+    <!-- Nav Item - Dashboard -->
+    {% url "home:home-view" as path %}
+    <li class="nav-item {% if path == request.path %}active{% endif %}">
+        <a class="nav-link" href="{{ path }}">
+            <i class="fas fa-fw fa-home"></i>
+            <span>Home</span></a>
+    </li>
+
+    <!-- Divider -->
+    <hr class="sidebar-divider">
+
+    <!-- Heading -->
+    <div class="sidebar-heading">
+        Modulos
+    </div>
+
+    <!-- Nav Item - Pages Collapse Menu -->
+    <li class="nav-item">
+        <a class="nav-link" href="#" data-toggle="collapse" data-target="#collapseTwo"
+           aria-expanded="true" aria-controls="collapseTwo">
+            <i class="fas fa-clipboard-list"></i>
+            <span>Inventário</span>
+        </a>
+        <div id="collapseTwo" class="collapse {% if request.resolver_match.app_name == "inventory" %}show{% endif %}"
+             aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                {% url "inventory:employee-list" as path %}
+                <a class="collapse-item {% if path == request.path %}active{% endif %}"
+                   href="{{ path }}">Funcionarios</a>
+                {% url "inventory:client-list" as path %}
+                <a class="collapse-item {% if path == request.path %}active{% endif %}" href="{{ path }}">Clientes</a>
+                {% url "inventory:car-list" as path %}
+                <a class="collapse-item {% if path == request.path %}active{% endif %}" href="{{ path }}">Automóveis</a>
+            </div>
+        </div>
+    </li>
+
+    {% url "mural:employee" as path %}
+    <li class="nav-item {% if path == request.path %}active{% endif %}">
+        <a class="nav-link" href="{{ path }}">
+            <i class="fas fa-fw fa-people-carry"></i>
+            <span>Mural de Funcionários</span></a>
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseModules"
+           aria-expanded="true" aria-controls="collapseUtilities">
+            <i class="fas fa-fw fa-wrench"></i>
+            <span>Serviço</span>
+        </a>
+        <div id="collapseModules"
+             class="collapse {% if request.resolver_match.app_name == "service" %}show{% endif %}"
+             aria-labelledby="headingModules"
+             data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                {% url "service:service-item-list" as path %}
+                <a class="collapse-item {% if path == request.path %}active{% endif %}" href="{{ path }}">Itens de
+                    Serviço</a>
+                {% url "service:service-list" as path %}
+                <a class="collapse-item {% if path == request.path %}active{% endif %}" href="{{ path }}">Serviços</a>
+                {% url "service:service-order-list" as path %}
+                <a class="collapse-item {% if path == request.path %}active{% endif %}" href="{{ path }}">Ordens de
+                    Serviço</a>
+
+            </div>
+        </div>
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseFinance"
+           aria-expanded="true" aria-controls="collapseUtilities">
+            <i class="fas fa-fw fa-money-bill"></i>
+            <span>Financeiro</span>
+        </a>
+        <div id="collapseFinance"
+             class="collapse {% if request.resolver_match.app_name == "finance" %}show{% endif %}"
+             aria-labelledby="headingUtilities"
+             data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                {% url "finance:invoice-list" as path %}
+                <a class="collapse-item {% if path == request.path %}active{% endif %}"
+                   href="{{ path }}">Faturamentos</a>
+            </div>
+        </div>
+    </li>
+
+    <!-- Divider -->
+    <hr class="sidebar-divider">
+
+    <!-- Heading -->
+    <div class="sidebar-heading">
+        Sistema
+    </div>
+
+    {% url "system:company-settings" as path %}
+    <li class="nav-item {% if path == request.path %}active{% endif %}">
+        <a class="nav-link" href="{{ path }}">
+            <i class="fas fa-fw fa-building"></i>
+            <span>Empresa</span></a>
+    </li>
+
+
+    <!-- Divider -->
+    <hr class="sidebar-divider d-none d-md-block">
+
+    <!-- Sidebar Toggler (Sidebar) -->
+    <div class="text-center d-none d-md-inline">
+        <button class="rounded-circle border-0" id="sidebarToggle"></button>
+    </div>
+
+</ul>

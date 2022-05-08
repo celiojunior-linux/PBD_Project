@@ -1,0 +1,33 @@
+{% extends "crud/create_view.html" %}
+{% block card_header %}<h3>Ordem de Serviço</h3>{% endblock %}
+{% block card_footer %}
+    <button type="submit" class="btn btn-success">Continuar <i class="fa fa-arrow-right"></i></button>
+    {% if form.invalid_distance %}
+        <div class="modal fade" tabindex="-1" role="dialog" id="confirmServiceOrder">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Confirmar Ordem de Serviço</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>{{ form.long_distance_error|floatformat:2 }}<br>Deseja confirmar a ordem de serviço?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" form="modelForm" class="btn btn-success" name="confirmDistance">Sim</button>
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Não</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}
+{% block scripts %}
+    <script>
+        {% if form.invalid_distance %}
+            $("#confirmServiceOrder").modal("show");
+        {% endif %}
+    </script>
+{% endblock %}

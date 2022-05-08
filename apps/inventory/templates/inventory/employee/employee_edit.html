@@ -1,0 +1,38 @@
+{% extends "crud/create_view.html" %}
+{% load static %}
+{% block card_header %}
+    <h3 class="text-dark">Ficha de Funcionário</h3>
+    {% if form.admission_date.value %}<span>Admissão em {{ form.admission_date.value }}</span>{% endif %}
+{% endblock %}
+{% block scripts %}
+    <script>
+        $(document).ready(() => {
+            function loadImage(target) {
+                let file = $(target).get(0).files[0];
+                let imgPreview = $("#img_preview");
+                if (file) {
+                    let reader = new FileReader();
+                    reader.onload = function () {
+                        imgPreview.attr("src", reader.result);
+                    }
+                    reader.readAsDataURL(file);
+                }
+            }
+
+            $(`<div style="width:300px; height:300px;" class="border mt-4 d-flex" ><img id="img_preview" alt="preview" class="img-fluid p-1" style="width:300px; height: 300px;"></div>`).insertAfter("#id_photo")
+            $("#id_photo").change(function(){
+                loadImage(this);
+            });
+
+            $("#removeImage").click(function(){
+                if (confirm("Deseja remover a foto?")){
+                    $("#id_photo").val(null);
+                    $("#img_preview").attr("src", null);
+                }
+            })
+            {% if object.photo %}
+                $("#img_preview").attr("src", "{{ object.photo.url }}")
+            {% endif %}
+        });
+    </script>
+{% endblock scripts %}

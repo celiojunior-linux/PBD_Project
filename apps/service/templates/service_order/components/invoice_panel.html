@@ -1,0 +1,10 @@
+{% if object.has_active_invoice and not object.get_active_invoice.sent %}
+    <a class="btn btn-sm btn-warning" href="{% url "finance:invoice-edit" object.get_active_invoice.pk %}">Editar NFS-e <i class="fa fa-edit"></i></a>
+{% elif object.get_active_invoice.sent %}
+    <a class="btn btn-sm btn-primary" target="_blank"
+       href="{% url "finance:invoice-view" object.get_active_invoice.pk %}">NFS-e <i
+            class="fa fa-search"></i></a>
+    <button class="btn btn-sm btn-danger" data-toggle="modal" data-target="#cancelConfirmModal"
+            onclick="assignToCancel('{{ object.get_active_invoice }}', '{% url 'finance:invoice-cancel' object.get_active_invoice.pk %}')"
+    >Cancelar NFS-e <i class="fa fa-times"></i></button>
+{% endif %}

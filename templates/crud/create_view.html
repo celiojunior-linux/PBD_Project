@@ -1,0 +1,23 @@
+{% extends "layout/base.html" %}
+{% load crispy_forms_filters %}
+{% block content %}
+    <div class="card">
+        <form method="POST" enctype="multipart/form-data" id="modelForm">
+            <div class="card-header">
+                {% block card_header %}{% endblock %}
+            </div>
+            <div class="card-body">
+                {% block card_body %}
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                {% endblock card_body %}
+            </div>
+            <div class="card-footer">
+                {% block card_footer %}
+                    <button class="btn btn-success">Salvar <i class="fa fa-save"></i></button>
+                {% endblock %}
+            </div>
+        </form>
+        {% block out_card %}{% endblock %}
+    </div>
+{% endblock %}
