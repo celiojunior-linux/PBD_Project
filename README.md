@@ -42,19 +42,19 @@ $ pip install mysqlclient
 ```
 
 - 4º - Após configurar o servidor _MySQL_, crie um novo database:
-```sql
+```mysql
 CREATE DATABASE aml_db;
 ```
 
 
 - 5º - Crie um novo usuário:
-```sql
+```mysql
 CREATE USER 'aml_dbadmin'@'localhost' IDENTIFIED BY 'secret123';
 ```
 
 
 - 6º - Defina alguns privilégios administrativos para o usuário:
-```sql
+```mysql
 GRANT ALL PRIVILEGES ON `aml_db` . * TO 'aml_dbadmin'@'localhost';
 FLUSH PRIVILEGES; 
 ```
@@ -112,6 +112,7 @@ $ python manage.py loaddata dump.json
 ```
 $ python manage.py runserver
 ```
-Pronto, o servidor _Django_ agora está executando com seu banco de dados _MySQL_, seja feliz.
+
+- Pronto, o servidor _Django_ agora está executando com seu banco de dados _MySQL_, seja feliz.
 (O processo de configuração do _PostgreSQL_ é bem similar, com exceção das configurações do driver, portanto
 não irei detalhá-lo aqui).

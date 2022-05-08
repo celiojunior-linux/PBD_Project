@@ -1,0 +1,1 @@
+web: gunicorn aml_ltda.wsgi --log-file -
