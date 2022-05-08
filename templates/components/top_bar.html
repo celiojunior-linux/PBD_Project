@@ -16,8 +16,10 @@
             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <span class="mr-2 d-none d-lg-inline text-gray-600 small">{{ request.user.name }}</span>
-                <img class="img-profile rounded-circle" alt="profile"
-                     src="{% if request.user.photo %}{{ request.user.photo.url }}{% else %}{% static "img/default_profile.jpeg" %}{% endif %}">
+                <div style="width:48px; height: 48px;">
+                    <img class="img-profile rounded-circle" alt="profile" style="object-fit: cover; width:100%; height:100%;"
+                         src="{% if request.user.photo %}{{ request.user.photo.url }}{% else %}{% static "img/default_profile.jpeg" %}{% endif %}">
+                </div>
             </a>
             <!-- Dropdown - User Information -->
             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"

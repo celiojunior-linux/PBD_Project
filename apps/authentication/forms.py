@@ -6,8 +6,9 @@ from django.conf import settings
 
 class AMLAuthenticationForm(AuthenticationForm):
 
-    captcha = ReCaptchaField(
-        public_key=settings.RECAPTCHA_PUBLIC_KEY,
-        private_key=settings.RECAPTCHA_PRIVATE_KEY,
-        widget=ReCaptchaV2Checkbox()
-    )
+    if settings.DEBUG is False:
+        captcha = ReCaptchaField(
+            public_key=settings.RECAPTCHA_PUBLIC_KEY,
+            private_key=settings.RECAPTCHA_PRIVATE_KEY,
+            widget=ReCaptchaV2Checkbox()
+        )

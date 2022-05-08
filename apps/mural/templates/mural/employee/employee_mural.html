@@ -12,12 +12,10 @@
                     <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
                         <div class="card shadow-sm border-0 rounded">
                             <div class="card-body p-0">
-                                <div class="overflow-hidden" style="height:230px;">
-                                    <img
-                                            class="img-fluid"
-                                            src="
-                                                    {% if employee.photo %}{{ employee.photo.url }}{% else %}{% static "img/default_profile.jpeg" %}{% endif %}"
-                                            alt="" class="w-100 card-img-top">
+                                <div class="overflow-hidden bg-dark" style="height: 200px;">
+                                    <img class="img-fluid" style="object-fit: cover !important; width:100%; height:100%;"
+                                         src="{% if employee.photo %}{{ employee.photo.url }}{% else %}{% static "img/default_profile.jpeg" %}{% endif %}"
+                                         alt="" class="w-100 card-img-top">
                                 </div>
 
                                 <div class="p-4">
