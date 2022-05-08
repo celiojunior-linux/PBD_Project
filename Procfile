@@ -1,1 +1,1 @@
-web: gunicorn aml_ld.wsgi --log-file -
+web: gunicorn aml_ltda.wsgi --log-file -
