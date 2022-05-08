@@ -1,0 +1,24 @@
+<div class="modal fade" id="cancelConfirmModal" tabindex="-1" role="dialog" aria-labelledby="cancelConfirmModal"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <form id="cancelForm" method="POST">
+            {% csrf_token %}
+        </form>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Confirmar Cancelamento</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>{% block cancel_message %} Deseja realmente cancelar o registro "<span id="cancelObject"></span>
+                    "? {% endblock %}</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Não</button>
+                <button type="submit" class="btn btn-danger" form="cancelForm">Sim</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -72,16 +72,12 @@
 
 {% endblock %}
 {% block card_footer %}
-    <button type="submit" class="btn btn-success">Atualizar <i class="fa fa-edit"></i></button>
+    <button type="submit" class="btn btn-sm btn-success">Atualizar <i class="fa fa-edit"></i></button>
     {% if object.concluded.1 and object.departure_date and not object.has_active_invoice %}
-        <button type="submit" class="btn btn-success" name="invoice" value="invoice" form="invoice">Faturar <i
+        <button type="submit" class="btn btn-sm btn-success" name="invoice" value="invoice" form="invoice">Faturar <i
                 class="fa fa-money-bill-wave"></i></button>
-    {% elif object.has_active_invoice and not object.get_active_invoice.sent %}
-        <a class="btn btn-warning" href="{% url "finance:invoice-edit" object.get_active_invoice.pk %}">Editar Nota
-            Fiscal <i class="fa fa-edit"></i></a>
-    {% elif object.get_active_invoice.sent %}
-        <a class="btn btn-primary" target="_blank" href="{% url "finance:invoice-view" object.get_active_invoice.pk %}">Visualizar Nota Fiscal<i
-                class="fa fa-search"></i></a>
+    {% else %}
+        {% include "service_order/components/invoice_panel.html" %}
     {% endif %}
 {% endblock %}
 {% block out_card %}

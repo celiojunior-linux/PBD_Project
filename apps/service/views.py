@@ -69,9 +69,7 @@ class ServiceOrderList(ListView):
 
     def get_context_data(self, **kwargs):
         if "service_order_filters" not in kwargs:
-            kwargs["service_order_filters"] = forms.ServiceOrderFilter(
-                self.request.GET
-            )
+            kwargs["service_order_filters"] = forms.ServiceOrderFilter(self.request.GET)
         return super().get_context_data(**kwargs)
 
     def get_queryset(self):
@@ -111,9 +109,7 @@ class ServiceOrderCreateView(CreateView, ModelCreateMixin):
 
     def get_form_kwargs(self):
         kwargs = super(ServiceOrderCreateView, self).get_form_kwargs()
-        initial = {
-            "sponsor_employee": self.request.user
-        }
+        initial = {"sponsor_employee": self.request.user}
         kwargs.update({"initial": initial, "request": self.request})
         return kwargs
 
@@ -163,11 +159,10 @@ class ServiceOrderEditView(UpdateView, ModelUpdateMixin):
             client_document=self.object.client.document,
             client_address=self.object.client.address,
             service_description=self.object.service.description,
-            total=self.object.total
+            total=self.object.total,
         )
         service_invoice.save()
         return HttpResponseRedirect(service_invoice.get_absolute_url())
-
 
 
 class ServiceOrderDeleteView(BetterDeleteView):

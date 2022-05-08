@@ -1,30 +1,47 @@
 {% extends "crud/table_view.html" %}
+{% load static %}
 {% block view_title %}Faturamentos{% endblock %}
 {% block table_head %}
     <tr>
         <th class="w-25"></th>
         <th>CPF do cliente</th>
-        <th>Nome do cliente</th>
-        <th>Descrição do serviço</th>
+        <th>Nome</th>
+        <th>Serviço</th>
         <th>Data de Faturamento</th>
         <th>Total R$</th>
+        <th>Status</th>
     </tr>
 {% endblock %}
 {% block table_row %}
     <tr>
         <th>
-{#            <a class="btn btn-sm btn-warning" href="{% url "inventory:client-edit" object.pk %}">Editar <i#}
-{#                    class="fa fa-pen"></i></a>#}
-{#            <button class="btn btn-sm btn-danger" data-toggle="modal" data-target="#deleteConfirmModal"#}
-{#                    onclick="assignToDelete('{{ object }}', '{% url 'inventory:client-delete' object.pk %}')">Remover#}
-{#                <i class="fa fa-trash"></i></button>#}
+            {% if object.canceled %}
+                <a class="btn btn-sm btn-primary" target="_blank"
+                   href="{% url "finance:invoice-view" object.pk %}">NFS-e <i
+                        class="fa fa-search"></i></a>
+            {% else %}
+                {% with object.service_order as object %}
+                    {% include "service_order/components/invoice_panel.html" %}
+                {% endwith %}
+            {% endif %}
         </th>
-        <td>{{ object.client_name }}</td>
         <td>{{ object.client_document }}</td>
+        <td>{{ object.client_name }}</td>
         <td>{{ object.service_description }}</td>
         <td>{{ object.invoice_date|date:"d/m/Y" }}</td>
         <td>{{ object.total|floatformat:2 }}</td>
+        <td>
+            {% if object.canceled %}
+                <small class="badge badge-warning" style="font-size: 12px;">NFS-e cancelada</small>
+            {% elif object.sent %}
+                <small class="badge badge-success" style="font-size: 12px;">NFS-e enviada</small>
+            {% else %}
+                <small class="badge badge-warning" style="font-size: 12px;">NFS-e em aguardo</small>
+            {% endif %}
+        </td>
     </tr>
 {% endblock %}
 {% block card_footer %}
+    {% include "finance/components/invoice_canceling_modal.html" %}
+    <script src="{% static "js/cancel_modal.js" %}"></script>
 {% endblock card_footer %}

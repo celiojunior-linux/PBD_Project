@@ -1,6 +1,12 @@
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseRedirect
-from django.views.generic import ListView, CreateView, DetailView, UpdateView
+from django.views.generic import (
+    ListView,
+    CreateView,
+    DetailView,
+    UpdateView,
+    RedirectView, TemplateView,
+)
 
 from apps.finance.forms import ServiceInvoiceEditForm
 from apps.finance.models import ServiceInvoice
@@ -48,3 +54,13 @@ class InvoiceEditView(UpdateView, DetailView, ModelUpdateMixin):
         if self.get_object().sent:
             raise PermissionDenied()
         return super(InvoiceEditView, self).get(request, *args, **kwargs)
+
+
+class InvoiceCancelView(RedirectView):
+    pattern_name = "finance:invoice-list"
+
+    def get_redirect_url(self, *args, **kwargs):
+        service_invoice = ServiceInvoice.objects.filter(pk=kwargs.pop("pk")).first()
+        service_invoice.canceled = True
+        service_invoice.save()
+        return super(InvoiceCancelView, self).get_redirect_url(*args, **kwargs)
