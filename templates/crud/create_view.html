@@ -1,4 +1,7 @@
 {% extends "layout/base.html" %}
+{% block style %}
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
+{% endblock %}
 {% load crispy_forms_filters %}
 {% block content %}
     <div class="card">
@@ -21,3 +24,12 @@
         {% block out_card %}{% endblock %}
     </div>
 {% endblock %}
+{% block scripts %}
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            let select = $('select')
+            select.select2();
+        });
+    </script>
+{% endblock scripts %}

@@ -42,6 +42,10 @@
                             <th>Total R$</th>
                             <th class="text-right">{{ object.total|floatformat:2 }}</th>
                         </tr>
+                        <tr>
+                            <th>Forma de pagamento</th>
+                            <th class="text-right">{{ object.payment_method }}</th>
+                        </tr>
                         </tfoot>
                     </table>
                 </div>

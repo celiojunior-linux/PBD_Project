@@ -13,7 +13,7 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <p>{{ form.long_distance_error|floatformat:2 }}<br>Deseja confirmar a ordem de serviço?</p>
+                        <p>{{ form.long_distance_error }}<br>Deseja confirmar a ordem de serviço?</p>
                     </div>
                     <div class="modal-footer">
                         <button type="submit" form="modelForm" class="btn btn-success" name="confirmDistance">Sim</button>
@@ -25,6 +25,7 @@
     {% endif %}
 {% endblock %}
 {% block scripts %}
+    {{ block.super }}
     <script>
         {% if form.invalid_distance %}
             $("#confirmServiceOrder").modal("show");

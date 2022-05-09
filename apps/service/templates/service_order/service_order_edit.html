@@ -48,7 +48,7 @@
                                 {% for hidden in form.hidden_fields %}
                                     {{ hidden }}
                                 {% endfor %}
-                                <tr class="table-row">
+                                <tr class="table-row p-0">
                                     {% for field in form.visible_fields %}
                                         <td>{{ field }}</td>
                                     {% endfor %}
@@ -69,7 +69,6 @@
         </div>
     </div>
 
-
 {% endblock %}
 {% block card_footer %}
     <button type="submit" class="btn btn-sm btn-success">Atualizar <i class="fa fa-edit"></i></button>
@@ -77,6 +76,7 @@
         <button type="submit" class="btn btn-sm btn-success" name="invoice" value="invoice" form="invoice">Faturar <i
                 class="fa fa-money-bill-wave"></i></button>
     {% else %}
+        {% include "finance/components/invoice_canceling_modal.html" %}
         {% include "service_order/components/invoice_panel.html" %}
     {% endif %}
 {% endblock %}
@@ -88,6 +88,7 @@
     {% endif %}
 {% endblock %}
 {% block scripts %}
+    {{ block.super }}
     <script type="text/javascript">
         $(".table-row select").addClass("form-control form-control-sm")
     </script>

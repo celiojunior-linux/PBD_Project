@@ -1,12 +1,13 @@
 {% load static %}
 <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
     <!-- Sidebar Toggle (Topbar) -->
-    <div>
-        <small>Deslogando por inatividade: {{ request.session.get_expiry_date }}</small>
-    </div>
+
     <button id="sidebarToggleTop" class="btn text-dark d-lg-none rounded-circle mr-3">
         <i class="fa fa-bars"></i>
     </button>
+    <div>
+        <small>Deslogando por inatividade: {{ request.session.get_expiry_date }}</small>
+    </div>
     <!-- Topbar Navbar -->
     <ul class="navbar-nav ml-auto">
         <div class="topbar-divider d-none d-sm-block">

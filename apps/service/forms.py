@@ -17,7 +17,7 @@ from geopy.distance import geodesic
 
 
 class ServiceOrderCreateForm(forms.ModelForm):
-    LONG_DISTANCE_ERROR = "O cliente encontra-se fora da distância de tolerância de %s."
+    LONG_DISTANCE_ERROR = "O cliente encontra-se a %skm (fora da distância de tolerância de %skm)"
     INVALID_DISTANCE_ERROR = "A distância do cliente é inválida!"
 
     class Meta:
@@ -30,6 +30,7 @@ class ServiceOrderCreateForm(forms.ModelForm):
         self.request = kwargs.pop("request")
         super(ServiceOrderCreateForm, self).__init__(*args, **kwargs)
         self.invalid_distance = False
+        self.client_distance = ""
 
     def clean_client(self):
         client = self.cleaned_data["client"]
@@ -44,14 +45,16 @@ class ServiceOrderCreateForm(forms.ModelForm):
 
         if "confirmDistance" not in self.request.POST:
             if total_distance > max_distance:
+                self.client_distance = f"{total_distance:.2f}"
                 self.invalid_distance = True
                 raise ValidationError(self.long_distance_error)
         return client
 
     @property
     def long_distance_error(self):
-        return "O cliente encontra-se fora da distância de tolerância de %skm." % (
-            self.cleaned_data["company"].distance_tolerance
+        return self.LONG_DISTANCE_ERROR % (
+            self.client_distance,
+            f"{self.cleaned_data['company'].distance_tolerance:.2f}"
         )
 
 

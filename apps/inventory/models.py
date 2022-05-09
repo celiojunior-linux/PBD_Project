@@ -27,7 +27,7 @@ class Company(models.Model):
                 "address": "Endereço da Empresa",
                 "latitude": 0,
                 "longitude": 0,
-                "distance_tolerance": 15
+                "distance_tolerance": 15,
             },
         )[0]
 
@@ -42,6 +42,7 @@ class Company(models.Model):
 class Employee(AbstractBaseUser):
     class Meta:
         verbose_name = "Funcionário"
+        ordering = ["pk"]
 
     name = models.CharField(verbose_name="nome", max_length=100)
     speciality = models.CharField(verbose_name="especialidade", max_length=100)
@@ -52,12 +53,14 @@ class Employee(AbstractBaseUser):
         verbose_name="data de admissão", default=timezone.now
     )
     salary = models.FloatField(verbose_name="salário")
-    photo = models.ImageField(verbose_name="foto", upload_to="profiles", blank=True, null=True)
+    photo = models.ImageField(
+        verbose_name="foto", upload_to="profiles", blank=True, null=True
+    )
 
     USERNAME_FIELD = "document"
 
     def __str__(self):
-        return f"[{self.id}] {self.name}"
+        return f"[{self.id}] {self.name} ({self.speciality})"
 
     def delete(self, using=None, keep_parents=False):
         self.photo.storage.delete(self.photo.name)
@@ -71,6 +74,7 @@ class Employee(AbstractBaseUser):
 class Client(models.Model):
     class Meta:
         verbose_name = "Cliente"
+        ordering = ["pk"]
 
     KINDS = [
         ("FREGUESES", "FREGUESES"),
@@ -99,6 +103,7 @@ class Client(models.Model):
 class Car(models.Model):
     class Meta:
         verbose_name = "Carro"
+        ordering = ["brand"]
 
     license_plate = models.CharField(verbose_name="placa", max_length=7, unique=True)
     model = models.CharField(verbose_name="modelo", max_length=100)

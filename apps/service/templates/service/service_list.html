@@ -5,6 +5,7 @@
         <th class="w-25"></th>
         <th>Código</th>
         <th>Descrição</th>
+        <th>Custo Médio R$</th>
     </tr>
 {% endblock %}
 {% block table_row %}
@@ -18,6 +19,7 @@
         </th>
         <th>{{ object.pk }}</th>
         <td>{{ object.description }}</td>
+        <td>{{ object.total|floatformat:2 }}</td>
     </tr>
 {% endblock %}
 {% block card_footer %}
