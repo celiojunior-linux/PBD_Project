@@ -151,7 +151,7 @@ class AMLLoginView(LoginView):
 
 
 - Depois
-```
+```python
 from django.contrib.auth.views import AuthenticationForm # Importar o formulário de autenticação padrão do django
 
 class AMLLoginView(LoginView):
