@@ -11,22 +11,27 @@ from apps.inventory.models import Company
 class Service(models.Model):
     class Meta:
         verbose_name = "serviço"
+        ordering = ['pk']
 
     description = models.CharField(verbose_name="descrição", max_length=100)
     service_items = models.ManyToManyField(
         verbose_name="itens",
         to="ServiceItem",
         blank=True,
-        help_text="Segure <i>Shift</i> para selecionar mais de um item",
+        help_text="Segure <i>Ctrl</i> para selecionar mais de um item",
     )
 
     def __str__(self):
         return f"[{self.pk}] {self.description}"
 
+    def total(self):
+        return self.service_items.aggregate(total=Sum('cost'))['total'] or 0
+
 
 class ServiceItem(models.Model):
     class Meta:
         verbose_name = "item de serviço"
+        ordering = ['pk']
 
     description = models.CharField(verbose_name="descrição", max_length=100)
     cost = models.FloatField(verbose_name="custo")

@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseRedirect
 from django.views.generic import (
@@ -10,7 +11,7 @@ from django.views.generic import (
 
 from apps.finance.forms import ServiceInvoiceEditForm
 from apps.finance.models import ServiceInvoice
-from apps.utils.mixins import ModelUpdateMixin
+from apps.utils.mixins import ModelUpdateMixin, ModelCreateMixin
 
 
 class InvoiceListView(ListView):
@@ -19,7 +20,7 @@ class InvoiceListView(ListView):
     queryset = ServiceInvoice.objects.all()
 
 
-class InvoiceCreateView(CreateView):
+class InvoiceCreateView(CreateView, ModelCreateMixin):
     model = ServiceInvoice
     template_name = "finance/invoicing_create.html"
     form_class = ServiceInvoiceEditForm
@@ -62,5 +63,6 @@ class InvoiceCancelView(RedirectView):
     def get_redirect_url(self, *args, **kwargs):
         service_invoice = ServiceInvoice.objects.filter(pk=kwargs.pop("pk")).first()
         service_invoice.canceled = True
+        messages.success(self.request, "NFS-e cancelada com sucesso!")
         service_invoice.save()
         return super(InvoiceCancelView, self).get_redirect_url(*args, **kwargs)

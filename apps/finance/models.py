@@ -8,10 +8,9 @@ from apps.service.models import ServiceItemOrder
 
 class ServiceInvoice(models.Model):
     PAYMENT_METHOD = (
+        ("Dinheiro", "Dinheiro"),
         ("À Vista", "À Vista"),
-        ("Boleto", "Boleto"),
-        ("Cartão de crédito", "Cartão de crédito"),
-        ("Cartão de Débito", "Cartão de Débito"),
+        ("Crédito", "Cartão de Crédito"),
     )
     service_order = models.ForeignKey(verbose_name="ordem de serviço", to="service.ServiceOrder",
                                       on_delete=models.PROTECT)

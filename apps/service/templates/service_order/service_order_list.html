@@ -32,9 +32,11 @@
                     </div>
                     <div class="mt-5">
                         <h3 class="heading">{{ service_order.service.description }}</h3>
-                        <div>Cliente: {{ service_order.client.name }}</div>
-                        <div>Carro: {{ service_order.client.car.model }}
-                            [{{ service_order.client.car.license_plate }}]
+                        <div style="height: 64px;">
+                            <div>Cliente: {{ service_order.client.name }}</div>
+                            <div>Carro: {{ service_order.client.car.model }}
+                                [{{ service_order.client.car.license_plate }}]
+                            </div>
                         </div>
                         <div class="mt-5">
                             {% if service_order.departure_date != None %}

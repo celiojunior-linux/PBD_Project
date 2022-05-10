@@ -19,7 +19,7 @@
                 }
             }
 
-            $(`<div style="width:300px; height:300px;" class="border mt-4 d-flex" ><img id="img_preview" alt="preview" class="img-fluid p-1" style="width:300px; height: 300px;"></div>`).insertAfter("#id_photo")
+            $(`<div class="col-md-4 p-1 border mt-2" style="height:300px;"><img id="img_preview" alt="preview" class="img-fluid" style="object-fit: cover; width:100%; height: 100%;"></div>`).insertAfter("#id_photo")
             $("#id_photo").change(function(){
                 loadImage(this);
             });
