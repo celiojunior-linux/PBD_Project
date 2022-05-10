@@ -1,3 +1,6 @@
+import json
+
+from django.core.serializers import serialize
 from django.db import models
 from django.db.models import Sum
 from django.db.models.signals import post_save
@@ -117,6 +120,15 @@ class ServiceOrder(models.Model):
         has_concluded = finished == total
         return percentual, has_concluded
 
+    @property
+    def data_as_dict(self):
+        return {
+            "entrance_date": self.entrance_date.strftime("%d/%m/%Y") if self.entrance_date else "",
+            "departure_date": self.departure_date.strftime("%d/%m/%Y") if self.departure_date else "",
+            "total_cost": f"{self.total:.2f}".replace(".", ","),
+            "tasks": [item.data_as_dict for item in self.serviceitemorder_set.all()]
+        }
+
 
 class ServiceItemOrder(models.Model):
     service_order = models.ForeignKey(
@@ -131,6 +143,14 @@ class ServiceItemOrder(models.Model):
         on_delete=models.PROTECT,
     )
     finished = models.BooleanField(verbose_name="finalizado", default=False)
+
+    @property
+    def data_as_dict(self):
+        return {
+            "description": self.service_item.description,
+            "finished": int(self.finished),
+            "cost": self.service_item.cost
+        }
 
 
 @receiver(post_save, sender=ServiceOrder)

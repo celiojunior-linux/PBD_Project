@@ -21,6 +21,12 @@
     {% block style %}
 
     {% endblock %}
+    <script src="{% static "vendor/jquery/jquery.min.js" %}"></script>
+    <script src="{% static "vendor/bootstrap/js/bootstrap.min.js" %}"></script>
+
+    <script src="{% static "vendor/jquery-easing/jquery.easing.min.js" %}"></script>
+
+    <script src="{% static "js/sb-admin-2.min.js" %}"></script>
 </head>
 
 <body id="page-top">
@@ -51,14 +57,6 @@
 <a class="scroll-to-top rounded" href="#page-top">
     <i class="fas fa-angle-up"></i>
 </a>
-
-<script src="{% static "vendor/jquery/jquery.min.js" %}"></script>
-<script src="{% static "vendor/bootstrap/js/bootstrap.min.js" %}"></script>
-
-<script src="{% static "vendor/jquery-easing/jquery.easing.min.js" %}"></script>
-
-<script src="{% static "js/sb-admin-2.min.js" %}"></script>
-
 <script>
     $(".alert").delay(2000).fadeOut(500);
 </script>

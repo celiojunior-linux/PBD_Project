@@ -40,7 +40,6 @@ class InvoiceEditView(UpdateView, DetailView, ModelUpdateMixin):
     http_method_names = ["post", "get"]
 
     def form_valid(self, form):
-        print("we are here")
         self.object = form.save(commit=False)
         self.object.sent = True
         self.object.save()
