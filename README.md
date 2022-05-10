@@ -65,29 +65,33 @@ FLUSH PRIVILEGES;
 # Arquivo: aml_ltda/settings.py (antes)
 ...
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME'  : 'db.sqlite3',
+    "default": {
+        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        "NAME": env("DATABASE_NAME"),
+        "USER": env("DATABASE_USER"),
+        "PASSWORD": env("DATABASE_PASSWORD"),
+        "HOST": env("DATABASE_HOST"),
+        "PORT": env("DATABASE_PORT"),
     }
 }
 ...
 ```
 
 
-- 8º - Configurar para conectar ao banco de dados _MySQL_:
+- 8º - Altere a engine de para executar com o _MySQL_:
   - É recomendado usar um arquivo .env para guardar as invormações sensíveis do projeto em variáveis de ambiente, para tanto, acompanhe o tutorial
   a seguir e entenda sobre: https://alicecampkin.medium.com/how-to-set-up-environment-variables-in-django-f3c4db78c55f
 ```python
 # Arquivo: aml_ltda/settings.py (depois)
 ...
 DATABASES = {
-    'default': {
-        'ENGINE'  : 'django.db.backends.mysql',
-        'NAME'    : 'aml_db',
-        'USER'    : 'aml_dbadmin',  
-        'PASSWORD': 'secret123',
-        'HOST'    : 'localhost',
-        'PORT'    : '3306',
+    "default": {
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": env("DATABASE_NAME"),
+        "USER": env("DATABASE_USER"),
+        "PASSWORD": env("DATABASE_PASSWORD"),
+        "HOST": env("DATABASE_HOST"),
+        "PORT": env("DATABASE_PORT"),
     }
 }
 ...
@@ -116,3 +120,55 @@ $ python manage.py runserver
 - Pronto, o servidor _Django_ agora está executando com seu banco de dados _MySQL_, seja feliz.
 (O processo de configuração do _PostgreSQL_ é bem similar, com exceção das configurações do driver, portanto
 não irei detalhá-lo aqui).
+---
+
+### Notas para o professor:
+- Na pasta do projeto eu incluí um arquivo .env com as configurações que utilizei no database, além das chaves para configurar o recaptcha.
+Caso não seja possível utilizar o recaptcha, para removê-lo, vá até apps/authentication/views.py e substitua a variável form_class para "AuthenticationForm" (sem as aspas).
+
+
+- Antes
+```python
+...
+class AMLLoginView(LoginView):
+    template_name = "auth/login.html"
+    form_class = AMLAuthenticationForm # Substituir aqui
+
+    def form_valid(self, form):
+        employee = authenticate(
+            self.request,
+            username=self.request.POST["username"],
+            password=self.request.POST["password"],
+        )
+        login(self.request, employee, "apps.authentication.backends.EmployeeBackend")
+        messages.success(self.request, "Login efetuado com sucesso!")
+        return HttpResponseRedirect(self.get_success_url())
+
+    def form_invalid(self, form):
+        messages.warning(self.request, "CPF ou senha inválidos!")
+        return super(AMLLoginView, self).form_invalid(form)
+```
+
+
+- Depois
+```
+from django.contrib.auth.views import AuthenticationForm # Importar o formulário de autenticação padrão do django
+
+class AMLLoginView(LoginView):
+    template_name = "auth/login.html"
+    form_class = AuthenticationForm # Substituir aqui
+
+    def form_valid(self, form):
+        employee = authenticate(
+            self.request,
+            username=self.request.POST["username"],
+            password=self.request.POST["password"],
+        )
+        login(self.request, employee, "apps.authentication.backends.EmployeeBackend")
+        messages.success(self.request, "Login efetuado com sucesso!")
+        return HttpResponseRedirect(self.get_success_url())
+
+    def form_invalid(self, form):
+        messages.warning(self.request, "CPF ou senha inválidos!")
+        return super(AMLLoginView, self).form_invalid(form)
+```
