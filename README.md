@@ -156,7 +156,7 @@ from django.contrib.auth.views import AuthenticationForm # Importar o formulári
 
 class AMLLoginView(LoginView):
     template_name = "auth/login.html"
-    form_class = AuthenticationForm # Substituir aqui
+    form_class = AuthenticationForm
 
     def form_valid(self, form):
         employee = authenticate(
