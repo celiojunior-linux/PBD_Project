@@ -82,6 +82,8 @@ class ServiceOrderList(ListView, ModelListMixin):
             queryset = self.model.resolved.all()
         elif status == "not_resolved":
             queryset = self.model.not_resolved.all()
+        elif status == "not_billed":
+            queryset = self.model.not_billed.all()
         else:
             queryset = super().get_queryset()
 

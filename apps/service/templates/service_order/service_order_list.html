@@ -44,6 +44,11 @@
                             {% else %}
                                 <span class="badge badge-warning">Em andamento</span>
                             {% endif %}
+                            {% if service_order.concluded.1 %}
+                                {% if service_order.serviceinvoice_set.count == 0 or not service_order.get_active_invoice.sent %}
+                                    <span class="badge badge-warning">Não faturado</span>
+                                {% endif %}
+                            {% endif %}
                             <div class="progress">
                                 <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0"
                                      aria-valuemax="100" style="width: {{ service_order.concluded.0 }}%;"></div>

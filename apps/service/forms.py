@@ -112,16 +112,16 @@ class ServiceOrderFilter(forms.Form):
         self.request = kwargs.pop("request")
         super(ServiceOrderFilter, self).__init__(*args, **kwargs)
         self.fields["client_car"].widget.attrs["placeholder"] = "Busca..."
-        self.fields["sponsor_employee"].choices = [
+        self.fields["sponsor_employee"].choices = [('', '----')] + [
             (employee.pk, employee)
             for employee in Employee.objects.filter(company=self.request.user.company)
         ]
-        # self.fields["sponsor_employee"].initial = 1
 
         self.fields["status"].choices = [
             ("", "Todos"),
             ("not_resolved", "Em andamento"),
             ("resolved", "Concluído"),
+            ("not_billed", "Não Faturado"),
         ]
         self.helper = FormHelper(self)
         self.helper.form_show_errors = False

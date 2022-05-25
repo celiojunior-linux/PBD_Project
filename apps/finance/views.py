@@ -1,9 +1,12 @@
 import calendar
+import copy
+from collections import OrderedDict
 
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 from django.db.models import Sum
 from django.http import HttpResponseRedirect
+from django.utils import timezone
 from django.views.generic import (
     ListView,
     CreateView,
@@ -78,7 +81,7 @@ class ProfitabilityQuery(FormView):
 
     @staticmethod
     def _get_company_grouping(data):
-        grouping = {}
+        grouping = OrderedDict()
         for name, month, subtotal in data:
             if not grouping.get(name):
                 grouping[name] = {
@@ -89,14 +92,14 @@ class ProfitabilityQuery(FormView):
                 }
 
             current_month = calendar.month_name[month]
-            grouping[name]["months"][current_month] = subtotal
+            grouping[name]["months"][current_month] = round(subtotal, 2)
             grouping[name]["total"] = sum(grouping[name]["months"].values())
         return grouping
 
-    def get_context_data(self, **kwargs):
-        context = super(ProfitabilityQuery, self).get_context_data(**kwargs)
-        year = self.request.GET.get("year")
+    def _process_profitability(self, context):
+        year = self.request.GET.get("year", timezone.now().year)
         company_results = Company.objects.all()
+
         if year:
             company_results = Company.objects.filter(
                 serviceinvoice__invoice_date__year=year, serviceinvoice__canceled=False
@@ -106,7 +109,48 @@ class ProfitabilityQuery(FormView):
             .values_list("name", "serviceinvoice__invoice_date__month", "subtotal")
             .distinct()
         )
-        context["company_grouping"] = self._get_company_grouping(data)
+        grouping = self._get_company_grouping(data)
+        context["grouping"]["company_grouping_profitability"] = grouping
+        return context, grouping
+
+    @staticmethod
+    def _process_balance_entry(profitability, loss):
+        entry_balance = copy.deepcopy(profitability)
+        for company_name, company in entry_balance.items():
+            if loss.get(company_name):
+                for month_name, month in company["months"].items():
+                    company["months"][month_name] = round(
+                        company["months"][month_name] - loss[company_name]["months"][month_name],
+                        2
+                    )
+                company["total"] -= loss[company_name]["total"]
+        return entry_balance
+
+    def _process_loss(self, context) -> tuple:
+        year = self.request.GET.get("year", timezone.now().year)
+        company_results = Company.objects.all()
+
+        if year:
+            company_results = company_results.filter(
+                serviceinvoice__canceled=False, serviceinvoice__sent=False
+            )
+        data = (
+            (company_results.annotate(subtotal=Sum("serviceinvoice__total")))
+            .values_list("name", "serviceinvoice__invoice_date__month", "subtotal")
+            .distinct()
+        )
+        grouping = self._get_company_grouping(data)
+        context["grouping"]["company_grouping_loss"] = grouping
+        return context, grouping
+
+    def get_context_data(self, **kwargs):
+        context = super(ProfitabilityQuery, self).get_context_data(**kwargs)
+        context["grouping"] = {}
+        context, profitability = self._process_profitability(context)
+        context, loss = self._process_loss(context)
+        context["grouping"]["company_grouping_entry"] = self._process_balance_entry(
+            profitability, loss
+        )
         return context
 
     def get_form_kwargs(self):
