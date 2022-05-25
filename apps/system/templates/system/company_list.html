@@ -12,10 +12,10 @@
 {% block table_row %}
     <tr>
         <th>
-            <a class="btn btn-sm btn-warning" href="{% url "inventory:company-edit" object.pk %}">Editar <i
+            <a class="btn btn-sm btn-warning" href="{% url "system:company-edit" object.pk %}">Editar <i
                     class="fa fa-pen"></i></a>
             <button class="btn btn-sm btn-danger" data-toggle="modal" data-target="#deleteConfirmModal"
-                    onclick="assignToDelete('{{ object }}', '{% url 'inventory:company-delete' object.pk %}')">Remover
+                    onclick="assignToDelete('{{ object }}', '{% url 'system:company-delete' object.pk %}')">Remover
                 <i class="fa fa-trash"></i></button>
         </th>
         <td>{{ object.cnpj }}</td>
@@ -25,6 +25,6 @@
     </tr>
 {% endblock %}
 {% block card_footer %}
-    <a class="btn btn-sm btn-success" href="{% url "inventory:company-create" %}">Adicionar <i
+    <a class="btn btn-sm btn-success" href="{% url "system:company-create" %}">Adicionar <i
             class="fa fa-plus-circle"></i></a>
 {% endblock card_footer %}

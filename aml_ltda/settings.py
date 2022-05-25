@@ -9,12 +9,12 @@ https://docs.djangoproject.com/en/4.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
+import locale
 import os
-
-import environ
-import django_heroku
 from pathlib import Path
 
+import django_heroku
+import environ
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 from django.urls import resolve, reverse_lazy
 
@@ -65,6 +65,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "apps.authentication.middlewares.login_middleware.EmployeeLoginMiddleware",
+    "apps.utils.middlewares.company_middleware.CompanyMiddleware",
 ]
 
 ROOT_URLCONF = "aml_ltda.urls"
@@ -168,3 +169,5 @@ RECAPTCHA_PUBLIC_KEY = env("RECAPTCHA_PUBLIC_KEY")
 RECAPTCHA_PRIVATE_KEY = env("RECAPTCHA_PRIVATE_KEY")
 
 django_heroku.settings(locals())
+
+locale.setlocale(locale.LC_ALL, "pt_BR.UTF-8")

@@ -1,17 +1,23 @@
 from django.contrib.auth.backends import ModelBackend
 
-from apps.inventory.models import Employee
+from apps.inventory.models import Employee, Company
 
 
 class EmployeeBackend(ModelBackend):
 
-    def authenticate(self, request, **kwargs):
+    @staticmethod
+    def authenticate(request, **kwargs):
         document = kwargs["username"]
         password = kwargs["password"]
+        company = request.POST["company"]
         try:
-            employee = Employee.objects.get(document=document, password=password)
-            # if customer.user.check_password(password) is True:
-            #     return customer.user
+            president = request.headquarter.president
+            if president:
+                if president.document == document and president.password == password:
+                    president.company = Company.objects.get(pk=company)
+                    president.save()
+                    return president
+            employee = Employee.objects.get(document=document, password=password, company=company)
             return employee
         except Employee.DoesNotExist:
             pass

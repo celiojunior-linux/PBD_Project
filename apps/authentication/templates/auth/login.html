@@ -20,6 +20,10 @@
                                     <form class="user" method="post">
                                         {% csrf_token %}
                                         <div class="form-group">
+                                            <label for="id_company">Selecione a Empresa</label>
+                                            {{ form.company }}
+                                        </div>
+                                        <div class="form-group">
                                             <input type="text" name="username" class="form-control form-control-user"
                                                    placeholder="CPF do funcionário" required>
                                         </div>

@@ -2,7 +2,14 @@ import django.forms as forms
 from django.core.exceptions import ValidationError
 
 from . import models
+from .models import Company
 from ..utils.fields import DateInput
+
+
+class CompanyCreateForm(forms.ModelForm):
+    class Meta:
+        model = models.Company
+        exclude = ["president", "manager", "headquarters"]
 
 
 class CompanyForm(forms.ModelForm):
@@ -10,7 +17,31 @@ class CompanyForm(forms.ModelForm):
         model = models.Company
         fields = "__all__"
 
-    field_order = ["name", "speciality", "document"]
+    def __init__(self, *args, **kwargs):
+        super(CompanyForm, self).__init__(*args, **kwargs)
+        if not self.instance.headquarters:
+            self.fields.pop("president")
+            self.fields.pop("manager")
+        else:
+            self.fields["headquarters"].disabled = True
+
+    def clean_headquarters(self):
+        headquarters = self.cleaned_data["headquarters"]
+        if self.instance in Company.get_headquarters() and headquarters is False:
+            raise ValidationError("É obrigatório haver uma empresa matriz.")
+        return headquarters
+
+    def clean_president(self):
+        president = self.cleaned_data["president"]
+        if not president:
+            raise ValidationError("É obrigatório escolher um presidente!")
+        return president
+
+    def clean_manager(self):
+        manager = self.cleaned_data["manager"]
+        if not manager:
+            raise ValidationError("É obrigatório escolher um gerente!")
+        return manager
 
 
 class EmployeeForm(forms.ModelForm):
@@ -29,7 +60,7 @@ class EmployeeForm(forms.ModelForm):
             "admission_date": DateInput(),
             "password": forms.TextInput(attrs={"type": "password"}),
         }
-        exclude = ["last_login"]
+        exclude = ["last_login", "company"]
 
     field_order = ["photo", "name", "speciality", "document", "password", "password_confirm"]
 
@@ -48,7 +79,7 @@ class EmployeeEditForm(forms.ModelForm):
             "admission_date": DateInput(),
             "password": forms.TextInput(attrs={"type": "password"}),
         }
-        exclude = ["password", "last_login"]
+        exclude = ["password", "last_login", "company"]
 
     field_order = ["photo"]
 
@@ -56,8 +87,7 @@ class EmployeeEditForm(forms.ModelForm):
 class ClientForm(forms.ModelForm):
     class Meta:
         model = models.Client
-        fields = "__all__"
-        exclude = ["car"]
+        exclude = ["car", "company"]
 
 
 class CarForm(forms.ModelForm):

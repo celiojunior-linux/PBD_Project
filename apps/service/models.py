@@ -16,6 +16,7 @@ class Service(models.Model):
         verbose_name = "serviço"
         ordering = ['pk']
 
+    company = models.ForeignKey(verbose_name="empresa", to=Company, on_delete=models.CASCADE)
     description = models.CharField(verbose_name="descrição", max_length=100)
     service_items = models.ManyToManyField(
         verbose_name="itens",
@@ -36,6 +37,7 @@ class ServiceItem(models.Model):
         verbose_name = "item de serviço"
         ordering = ['pk']
 
+    company = models.ForeignKey(verbose_name="empresa", to=Company, on_delete=models.CASCADE)
     description = models.CharField(verbose_name="descrição", max_length=100)
     cost = models.FloatField(verbose_name="custo")
 
@@ -65,7 +67,6 @@ class ServiceOrder(models.Model):
         verbose_name="Empresa",
         to="inventory.Company",
         on_delete=models.PROTECT,
-        default=Company.object,
     )
     sponsor_employee = models.ForeignKey(
         verbose_name="funcionário responsável",

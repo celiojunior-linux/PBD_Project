@@ -1,20 +1,25 @@
+import calendar
+
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
+from django.db.models import Sum
 from django.http import HttpResponseRedirect
 from django.views.generic import (
     ListView,
     CreateView,
     DetailView,
     UpdateView,
-    RedirectView, TemplateView,
+    RedirectView,
+    FormView,
 )
 
-from apps.finance.forms import ServiceInvoiceEditForm
+from apps.finance.forms import ServiceInvoiceEditForm, ProfitabilityFilterForm
 from apps.finance.models import ServiceInvoice
-from apps.utils.mixins import ModelUpdateMixin, ModelCreateMixin
+from apps.inventory.models import Company
+from apps.utils.mixins import ModelUpdateMixin, ModelCreateMixin, ModelListMixin
 
 
-class InvoiceListView(ListView):
+class InvoiceListView(ListView, ModelListMixin):
     model = ServiceInvoice
     template_name = "finance/invoicing_list.html"
     queryset = ServiceInvoice.objects.all()
@@ -65,3 +70,46 @@ class InvoiceCancelView(RedirectView):
         messages.success(self.request, "NFS-e cancelada com sucesso!")
         service_invoice.save()
         return super(InvoiceCancelView, self).get_redirect_url(*args, **kwargs)
+
+
+class ProfitabilityQuery(FormView):
+    template_name = "profitability/profitability_query.html"
+    form_class = ProfitabilityFilterForm
+
+    @staticmethod
+    def _get_company_grouping(data):
+        grouping = {}
+        for name, month, subtotal in data:
+            if not grouping.get(name):
+                grouping[name] = {
+                    "months": {
+                        calendar.month_name[month]: 0 for month in range(1, 12 + 1)
+                    },
+                    "total": 0,
+                }
+
+            current_month = calendar.month_name[month]
+            grouping[name]["months"][current_month] = subtotal
+            grouping[name]["total"] = sum(grouping[name]["months"].values())
+        return grouping
+
+    def get_context_data(self, **kwargs):
+        context = super(ProfitabilityQuery, self).get_context_data(**kwargs)
+        year = self.request.GET.get("year")
+        company_results = Company.objects.all()
+        if year:
+            company_results = Company.objects.filter(
+                serviceinvoice__invoice_date__year=year, serviceinvoice__canceled=False
+            )
+        data = (
+            (company_results.annotate(subtotal=Sum("serviceinvoice__total")))
+            .values_list("name", "serviceinvoice__invoice_date__month", "subtotal")
+            .distinct()
+        )
+        context["company_grouping"] = self._get_company_grouping(data)
+        return context
+
+    def get_form_kwargs(self):
+        kwargs = super(ProfitabilityQuery, self).get_form_kwargs()
+        kwargs.update({"initial": self.request.GET})
+        return kwargs

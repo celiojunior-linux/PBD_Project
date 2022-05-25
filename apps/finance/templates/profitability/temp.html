@@ -1,0 +1,26 @@
+<div class="d-flex" style="gap: 20px;">
+    <div>
+        <label for="year">Ano da Consulta</label>
+        <div class="input-group">
+            <input type="number" min="1970" class="form-control"
+                   value="
+
+                           {% if request.GET.year %}{{ request.GET.year }}{% else %}{% now "Y" %}{% endif %}"
+                   id="year" name="year">
+            <div class="input-group-append">
+                <a class="btn btn-primary" href="{% url "finance:profitability-view" %}"><i
+                        class="fa fa-spinner"></i></a>
+                <button class="btn btn-success"><i class="fa fa-search"></i></button>
+            </div>
+        </div>
+    </div>
+    <div>
+        <label for="graphType">Tipo de gráfico</label>
+        <div class="input-group">
+            <select class="form-control" id="graphType">
+                <option value="bar">Barra</option>
+                <option value="line">Linha</option>
+            </select>
+        </div>
+    </div>
+</div>
