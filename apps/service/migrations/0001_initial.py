@@ -47,7 +47,7 @@ class Migration(migrations.Migration):
                 ('entrance_date', models.DateField(default=django.utils.timezone.now, verbose_name='data de entrada')),
                 ('departure_date', models.DateField(blank=True, null=True, verbose_name='data de saída')),
                 ('client', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='inventory.client', verbose_name='cliente')),
-                ('company', models.ForeignKey(default=apps.inventory.models.Company.object, on_delete=django.db.models.deletion.PROTECT, to='inventory.company', verbose_name='Empresa')),
+                ('company', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='inventory.company', verbose_name='Empresa')),
                 ('service', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='service.service', verbose_name='serviço')),
                 ('sponsor_employee', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to=settings.AUTH_USER_MODEL, verbose_name='funcionário responsável')),
             ],

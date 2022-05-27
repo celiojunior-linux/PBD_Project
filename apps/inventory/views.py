@@ -1,14 +1,14 @@
-from django.http import Http404
 from django.urls import reverse_lazy
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+from django.views.generic import ListView, CreateView, UpdateView
 
 from . import forms
 from ..utils import mixins
 from . import models
+from ..utils.mixins import ModelListMixin
 from ..utils.views import BetterDeleteView
 
 
-class EmployeeListView(ListView):
+class EmployeeListView(ListView, ModelListMixin):
     model = models.Employee
     template_name = "inventory/employee/employee_list.html"
 

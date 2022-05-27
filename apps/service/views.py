@@ -1,12 +1,12 @@
 from django.core.exceptions import PermissionDenied
 from django.db.models import Sum, Q
-from django.http import HttpResponse, HttpResponseRedirect
-from django.urls import reverse_lazy, reverse
+from django.http import HttpResponseRedirect
+from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView
 
 from . import models, forms
-from apps.utils.mixins import ModelCreateMixin, ModelUpdateMixin
-from .models import ServiceItem, ServiceOrder
+from apps.utils.mixins import ModelCreateMixin, ModelUpdateMixin, ModelListMixin
+from .models import ServiceItem
 from ..finance.models import ServiceInvoice
 from ..utils.views import BetterDeleteView
 
@@ -20,13 +20,13 @@ class ServiceCreateView(CreateView, ModelCreateMixin):
     model = models.Service
     template_name = "service/service_edit.html"
     success_url = reverse_lazy("service:service-list")
-    fields = "__all__"
+    fields = ["description", "service_items"]
 
 
 class ServiceEditView(UpdateView, ModelUpdateMixin):
     model = models.Service
     template_name = "service/service_edit.html"
-    fields = "__all__"
+    fields = ["description", "service_items"]
 
     def get_success_url(self):
         return self.request.path
@@ -46,13 +46,13 @@ class ServiceItemCreateView(CreateView, ModelCreateMixin):
     model = models.ServiceItem
     template_name = "service_item/service_item_edit.html"
     success_url = reverse_lazy("service:service-item-list")
-    fields = "__all__"
+    fields = ["description", "cost"]
 
 
 class ServiceItemEditView(UpdateView, ModelUpdateMixin):
     model = models.ServiceItem
     template_name = "service_item/service_item_edit.html"
-    fields = "__all__"
+    fields = ["description", "cost"]
 
     def get_success_url(self):
         return self.request.path
@@ -63,13 +63,13 @@ class ServiceItemDeleteView(BetterDeleteView):
     success_url = reverse_lazy("service:service-item-list")
 
 
-class ServiceOrderList(ListView):
+class ServiceOrderList(ListView, ModelListMixin):
     model = models.ServiceOrder
     template_name = "service_order/service_order_list.html"
 
     def get_context_data(self, **kwargs):
         if "service_order_filters" not in kwargs:
-            kwargs["service_order_filters"] = forms.ServiceOrderFilter(self.request.GET)
+            kwargs["service_order_filters"] = forms.ServiceOrderFilter(self.request.GET, request=self.request)
         return super().get_context_data(**kwargs)
 
     def get_queryset(self):
@@ -82,6 +82,8 @@ class ServiceOrderList(ListView):
             queryset = self.model.resolved.all()
         elif status == "not_resolved":
             queryset = self.model.not_resolved.all()
+        elif status == "not_billed":
+            queryset = self.model.not_billed.all()
         else:
             queryset = super().get_queryset()
 
@@ -98,7 +100,7 @@ class ServiceOrderList(ListView):
         if sponsor_employee:
             filters &= Q(sponsor_employee=sponsor_employee)
 
-        queryset = queryset.filter(filters)
+        queryset = queryset.filter(filters, company=self.request.user.company)
         return queryset
 
 
@@ -118,6 +120,11 @@ class ServiceOrderEditView(UpdateView, ModelUpdateMixin):
     model = models.ServiceOrder
     template_name = "service_order/service_order_edit.html"
     form_class = forms.ServiceOrderEditForm
+
+    def get_form_kwargs(self):
+        kwargs = super(ServiceOrderEditView, self).get_form_kwargs()
+        kwargs.update({"request": self.request})
+        return kwargs
 
     def get_context_data(self, **kwargs):
         obj = self.get_object()
@@ -151,6 +158,7 @@ class ServiceOrderEditView(UpdateView, ModelUpdateMixin):
 
     def generate_invoice(self):
         service_invoice = ServiceInvoice.objects.create(
+            company=self.request.user.company,
             service_order=self.object,
             company_document=self.object.company.cnpj,
             company_name=self.object.company.name,

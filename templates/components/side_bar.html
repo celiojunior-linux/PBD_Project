@@ -7,7 +7,12 @@
             <i class="fas fa-car-side"></i>
         </div>
         <div class="sidebar-brand-text mx-3">Auto Mecânica</div>
+
     </a>
+    <hr class="sidebar-divider my-0">
+    <div class="p-4">
+        <div class="text-light" >Empresa: {{ request.user.company.name }}</div>
+    </div>
 
     <!-- Divider -->
     <hr class="sidebar-divider my-0">
@@ -94,6 +99,9 @@
                 {% url "finance:invoice-list" as path %}
                 <a class="collapse-item {% if path == request.path %}active{% endif %}"
                    href="{{ path }}">Faturamentos</a>
+                {% url "finance:profitability-view" as path %}
+                <a class="collapse-item {% if path == request.path %}active{% endif %}"
+                   href="{{ path }}">Lucratividade</a>
             </div>
         </div>
     </li>
@@ -113,6 +121,14 @@
             <span>Empresa</span></a>
     </li>
 
+    {% if request.user == request.headquarter.president %}
+        {% url "system:company-list" as path %}
+        <li class="nav-item {% if path == request.path %}active{% endif %}">
+            <a class="nav-link" href="{{ path }}">
+                <i class="fas fa-fw fa-building"></i>
+                <span>Gerenciar Empresas</span></a>
+        </li>
+    {% endif %}
 
     <!-- Divider -->
     <hr class="sidebar-divider d-none d-md-block">

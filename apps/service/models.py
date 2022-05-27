@@ -1,8 +1,5 @@
-import json
-
-from django.core.serializers import serialize
 from django.db import models
-from django.db.models import Sum
+from django.db.models import Sum, Q
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.urls import reverse
@@ -14,8 +11,11 @@ from apps.inventory.models import Company
 class Service(models.Model):
     class Meta:
         verbose_name = "serviço"
-        ordering = ['pk']
+        ordering = ["pk"]
 
+    company = models.ForeignKey(
+        verbose_name="empresa", to=Company, on_delete=models.CASCADE
+    )
     description = models.CharField(verbose_name="descrição", max_length=100)
     service_items = models.ManyToManyField(
         verbose_name="itens",
@@ -28,14 +28,17 @@ class Service(models.Model):
         return f"[{self.pk}] {self.description}"
 
     def total(self):
-        return self.service_items.aggregate(total=Sum('cost'))['total'] or 0
+        return self.service_items.aggregate(total=Sum("cost"))["total"] or 0
 
 
 class ServiceItem(models.Model):
     class Meta:
         verbose_name = "item de serviço"
-        ordering = ['pk']
+        ordering = ["pk"]
 
+    company = models.ForeignKey(
+        verbose_name="empresa", to=Company, on_delete=models.CASCADE
+    )
     description = models.CharField(verbose_name="descrição", max_length=100)
     cost = models.FloatField(verbose_name="custo")
 
@@ -53,10 +56,23 @@ class NotResolvedServiceOrderManager(models.Manager):
         return super().get_queryset().filter(departure_date__isnull=True)
 
 
+class NotBilledServiceOrderManager(models.Manager):
+    def get_queryset(self):
+        return (
+            super()
+            .get_queryset()
+            .filter(
+                 Q(Q(serviceitemorder__finished=True), Q(serviceinvoice__sent=False) | Q(serviceinvoice__canceled=True))
+            )
+            .distinct()
+        )
+
+
 class ServiceOrder(models.Model):
     objects = models.Manager()
     resolved = ResolvedServiceOrderManager()
     not_resolved = NotResolvedServiceOrderManager()
+    not_billed = NotBilledServiceOrderManager()
 
     class Meta:
         verbose_name = "ordem de serviço"
@@ -65,7 +81,6 @@ class ServiceOrder(models.Model):
         verbose_name="Empresa",
         to="inventory.Company",
         on_delete=models.PROTECT,
-        default=Company.object,
     )
     sponsor_employee = models.ForeignKey(
         verbose_name="funcionário responsável",
@@ -123,10 +138,14 @@ class ServiceOrder(models.Model):
     @property
     def data_as_dict(self):
         return {
-            "entrance_date": self.entrance_date.strftime("%d/%m/%Y") if self.entrance_date else "",
-            "departure_date": self.departure_date.strftime("%d/%m/%Y") if self.departure_date else "",
+            "entrance_date": self.entrance_date.strftime("%d/%m/%Y")
+            if self.entrance_date
+            else "",
+            "departure_date": self.departure_date.strftime("%d/%m/%Y")
+            if self.departure_date
+            else "",
             "total_cost": f"{self.total:.2f}".replace(".", ","),
-            "tasks": [item.data_as_dict for item in self.serviceitemorder_set.all()]
+            "tasks": [item.data_as_dict for item in self.serviceitemorder_set.all()],
         }
 
 
@@ -149,7 +168,7 @@ class ServiceItemOrder(models.Model):
         return {
             "description": self.service_item.description,
             "finished": int(self.finished),
-            "cost": self.service_item.cost
+            "cost": self.service_item.cost,
         }
 
 

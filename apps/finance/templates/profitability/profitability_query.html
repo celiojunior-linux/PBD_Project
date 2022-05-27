@@ -1,0 +1,166 @@
+{% extends "layout/base.html" %}
+{% load crispy_forms_tags %}
+{% load crispy_forms_filters %}
+{% load static %}
+{% block content %}
+    <div class="my-2 shadow p-4">
+        <div class="d-flex justify-content-between">
+            <div>
+                <h3>Análise de Lucratividade Anual</h3>
+                {% crispy form %}
+            </div>
+        </div>
+        <div class="">
+        </div>
+    </div>
+
+    <div class="mt-4 card p-4">
+        <h2>Gráficos de Ganhos das Empresas</h2>
+        <div class="d-flex flex-wrap">
+            {% for company in grouping.company_grouping_profitability.items %}
+                <div class="mt-5 col-md-6">
+                    <h5><i class="fa fa-arrow-right"></i> {{ company.0 }}</h5>
+                    <small class="text-success">Total: {{ company.1.total|floatformat:2 }}</small>
+                    <canvas id="companyProfitability-{{ forloop.counter }}"></canvas>
+                </div>
+            {% empty %}
+                <h5 class="text-danger">Resultados não encontrados para o ano escolhido.</h5>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="mt-4 card p-4">
+        <h2>Gráficos de Lucro das Empresas</h2>
+        <div class="d-flex flex-wrap">
+            {% for company in grouping.company_grouping_entry.items %}
+                <div class="mt-5 col-md-6">
+                    <h5><i class="fa fa-arrow-right"></i> {{ company.0 }}</h5>
+                    <small class="text-success">Total: {{ company.1.total|floatformat:2 }}</small>
+                    <canvas id="companyEntry-{{ forloop.counter }}"></canvas>
+                </div>
+            {% empty %}
+                <h5 class="text-danger">Resultados não encontrados para o ano escolhido.</h5>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="mt-4 card p-4">
+        <h2>Gráficos de Débito dos Clientes</h2>
+        <div class="d-flex flex-wrap">
+            {% for company in grouping.company_grouping_loss.items %}
+                <div class="mt-5 col-md-6">
+                    <h5><i class="fa fa-arrow-right"></i> {{ company.0 }}</h5>
+                    <small class="text-danger">Total: {{ company.1.total|floatformat:2 }}</small>
+                    <canvas id="companyLoss-{{ forloop.counter }}"></canvas>
+                </div>
+            {% empty %}
+                <h5 class="text-danger">Resultados não encontrados para o ano escolhido.</h5>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
+{% block scripts %}
+    {{ block.super }}
+    <script src="{% static "vendor/chart.js/Chart.bundle.js" %}"></script>
+    <script src="{% static "vendor/chart.js/Chart.js" %}"></script>
+    <script>
+        let ctx;
+        let myChart;
+
+        {% for company, values in grouping.company_grouping_profitability.items %}
+            ctx = document.getElementById('companyProfitability-{{ forloop.counter }}').getContext('2d');
+            myChart = new Chart(ctx, {
+                type: "{{ form.graph_type.value|default_if_none:"bar" }}",
+                data: {
+                    labels: [{% for month in values.months %}'{{ month }}',{% endfor %}],
+                    datasets: [{
+                        label: "Ganhos",
+                        data: [{% for value in values.months.values %} '{{ value }}', {% endfor %}],
+                        backgroundColor: [
+                            {% for i in ""|center:12 %}
+                                "rgba(75, 192, 192, 0.2)",
+                            {% endfor %}
+                        ],
+                        borderColor: [
+                            {% for i in ""|center:12 %}
+                                "rgba(75, 192, 192, 1)",
+                            {% endfor %}
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                        }
+                    }
+                }
+            });
+        {% endfor %}
+        {% for company, values in grouping.company_grouping_entry.items %}
+            ctx = document.getElementById('companyEntry-{{ forloop.counter }}').getContext('2d');
+            myChart = new Chart(ctx, {
+                type: "{{ form.graph_type.value|default_if_none:"bar" }}",
+                data: {
+                    labels: [{% for month in values.months %}'{{ month }}',{% endfor %}],
+                    datasets: [{
+                        label: "Ganhos",
+                        data: [{% for value in values.months.values %} '{{ value }}', {% endfor %}],
+                        backgroundColor: [
+                            {% for i in ""|center:12 %}
+                                "rgba(75, 192, 192, 0.2)",
+                            {% endfor %}
+                        ],
+                        borderColor: [
+                            {% for i in ""|center:12 %}
+                                "rgba(75, 192, 192, 1)",
+                            {% endfor %}
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                        }
+                    }
+                }
+            });
+        {% endfor %}
+        {% for company, values in grouping.company_grouping_loss.items %}
+            ctx = document.getElementById('companyLoss-{{ forloop.counter }}').getContext('2d');
+            myChart = new Chart(ctx, {
+                type: "{{ form.graph_type.value|default_if_none:"bar" }}",
+                data: {
+                    labels: [{% for month in values.months %}'{{ month }}',{% endfor %}],
+                    datasets: [{
+                        label: "Em aberto",
+                        data: [{% for value in values.months.values %} '{{ value }}', {% endfor %}],
+                        backgroundColor: [
+                            {% for i in ""|center:12 %}
+                                "rgba(255, 100, 100, 0.2)",
+                            {% endfor %}
+                        ],
+                        borderColor: [
+                            {% for i in ""|center:12 %}
+                                "rgba(255, 100, 100, 1)",
+                            {% endfor %}
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                        }
+                    }
+                }
+            });
+        {% endfor %}
+
+
+    </script>
+{% endblock %}

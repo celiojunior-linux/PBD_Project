@@ -1,3 +1,5 @@
+from math import inf
+
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import (
     Layout,
@@ -9,7 +11,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.forms import inlineformset_factory
 
-from apps.inventory.models import Employee
+from apps.inventory.models import Employee, Company
 from apps.service import models
 from apps.service.models import ServiceOrder, ServiceItemOrder
 from apps.utils.fields import DateInput
@@ -17,30 +19,52 @@ from geopy.distance import geodesic
 
 
 class ServiceOrderCreateForm(forms.ModelForm):
-    LONG_DISTANCE_ERROR = "O cliente encontra-se a %skm (fora da distância de tolerância de %skm)"
+    LONG_DISTANCE_ERROR = """\
+    O cliente encontra-se a %skm (fora da distância de tolerância de %skm)
+    A empresa mais próxima é %s e está a %skm de distância"
+    """
     INVALID_DISTANCE_ERROR = "A distância do cliente é inválida!"
 
     class Meta:
         model = models.ServiceOrder
         fields = "__all__"
-        exclude = ["departure_date"]
+        exclude = ["departure_date", "company"]
         widgets = {"entrance_date": DateInput(), "company": forms.HiddenInput()}
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop("request")
         super(ServiceOrderCreateForm, self).__init__(*args, **kwargs)
         self.invalid_distance = False
+        self.fields["sponsor_employee"].queryset = Employee.objects.filter(
+            company=self.request.user.company
+        )
+        self.closest_company = ""
+        self.closest_distance = ""
         self.client_distance = ""
 
     def clean_client(self):
         client = self.cleaned_data["client"]
-        company = self.cleaned_data["company"]
+        company = self.request.user.company
         client_distance = (client.latitude, client.longitude)
         company_distance = (company.latitude, company.longitude)
         max_distance = company.distance_tolerance
+
         try:
             total_distance = geodesic(client_distance, company_distance).km
-        except ValueError:
+            distances = [
+                (company.name, geodesic(
+                        (client.latitude, client.longitude),
+                        (company.latitude, company.longitude),
+                    ).km)
+                for company in Company.objects.all()
+            ]
+            current_distance = inf
+            for c_name, distance in distances:
+                if distance < current_distance:
+                    self.closest_company = c_name
+                    self.closest_distance = distance
+
+        except ValueError as e:
             raise ValidationError(self.INVALID_DISTANCE_ERROR)
 
         if "confirmDistance" not in self.request.POST:
@@ -54,7 +78,9 @@ class ServiceOrderCreateForm(forms.ModelForm):
     def long_distance_error(self):
         return self.LONG_DISTANCE_ERROR % (
             self.client_distance,
-            f"{self.cleaned_data['company'].distance_tolerance:.2f}"
+            f"{self.request.user.company.distance_tolerance:.2f}",
+            f"{self.closest_company}",
+            f"{self.closest_distance:.2f}"
         )
 
 
@@ -64,6 +90,13 @@ class ServiceOrderEditForm(forms.ModelForm):
         exclude = ["company"]
         fields = "__all__"
         widgets = {"departure_date": DateInput(), "entrance_date": DateInput()}
+
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop("request")
+        super(ServiceOrderEditForm, self).__init__(*args, **kwargs)
+        self.fields["sponsor_employee"].queryset = Employee.objects.filter(
+            company=self.request.user.company
+        )
 
     def clean_departure_date(self):
         entrance_date = self.cleaned_data["entrance_date"]
@@ -79,7 +112,9 @@ class ServiceOrderEditForm(forms.ModelForm):
             )
         ):
             self.fields["departure_date"].widget.attrs["value"] = None
-            self.add_error("departure_date", "Todos os itens de serviço devem estar concluídos.")
+            self.add_error(
+                "departure_date", "Todos os itens de serviço devem estar concluídos."
+            )
 
         return departure_date
 
@@ -95,17 +130,19 @@ class ServiceOrderFilter(forms.Form):
     status = forms.ChoiceField(required=False, label="Filtrar por status")
 
     def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop("request")
         super(ServiceOrderFilter, self).__init__(*args, **kwargs)
         self.fields["client_car"].widget.attrs["placeholder"] = "Busca..."
-        self.fields["sponsor_employee"].choices = [("", "Todos")] + [
-            (choice.pk, choice) for choice in Employee.objects.all()
+        self.fields["sponsor_employee"].choices = [("", "----")] + [
+            (employee.pk, employee)
+            for employee in Employee.objects.filter(company=self.request.user.company)
         ]
-        self.fields["sponsor_employee"].initial = 1
 
         self.fields["status"].choices = [
             ("", "Todos"),
             ("not_resolved", "Em andamento"),
             ("resolved", "Concluído"),
+            ("not_billed", "Não Faturado"),
         ]
         self.helper = FormHelper(self)
         self.helper.form_show_errors = False

@@ -3,6 +3,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.urls import reverse
 
+from apps.inventory.models import Company
 from apps.service.models import ServiceItemOrder
 
 
@@ -12,6 +13,7 @@ class ServiceInvoice(models.Model):
         ("À Vista", "À Vista"),
         ("Crédito", "Cartão de Crédito"),
     )
+    company = models.ForeignKey(verbose_name="empresa", to=Company, on_delete=models.CASCADE)
     service_order = models.ForeignKey(verbose_name="ordem de serviço", to="service.ServiceOrder",
                                       on_delete=models.PROTECT)
     company_document = models.CharField(verbose_name="CNPJ da empresa", max_length=14)

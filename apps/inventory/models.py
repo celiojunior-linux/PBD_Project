@@ -9,34 +9,54 @@ class Company(models.Model):
     class Meta:
         verbose_name = "empresa"
 
+    id = models.BigAutoField(primary_key=True)
     name = models.CharField(verbose_name="nome", max_length=100)
     cnpj = models.CharField(verbose_name="CNPJ", max_length=14, unique=True)
+    headquarters = models.BooleanField(verbose_name="matriz", default=False)
+    president = models.ForeignKey(
+        verbose_name="presidente",
+        to="Employee",
+        null=True,
+        blank=True,
+        on_delete=models.DO_NOTHING,
+        related_name="president",
+    )
+    manager = models.ForeignKey(
+        verbose_name="gerente",
+        to="Employee",
+        null=True,
+        blank=True,
+        on_delete=models.DO_NOTHING,
+        related_name="manager",
+    )
     registration = models.CharField(verbose_name="inscrição estadual", max_length=255)
     address = models.CharField(verbose_name="endereço", max_length=100)
     latitude = models.FloatField()
     longitude = models.FloatField()
     distance_tolerance = models.FloatField(verbose_name="tolerância de distância (km)")
 
-    @classmethod
-    def object(cls):
-        return cls._default_manager.get_or_create(
-            pk=1,
-            defaults={
-                "cnpj": "99999999999999",
-                "name": "Nome da Empresa",
-                "address": "Endereço da Empresa",
-                "latitude": 0,
-                "longitude": 0,
-                "distance_tolerance": 15,
-            },
-        )[0]
-
-    def save(self, *args, **kwargs):
-        self.pk = self.id = 1
-        return super().save(*args, **kwargs)
-
     def __str__(self):
         return f"[{self.id}] {self.cnpj} - {self.name}"
+
+    def save(self, *args, **kwargs):
+        if self.headquarters:
+            for company in Company.get_headquarters():
+                if not self.president:
+                    self.president, company.president = company.president, None
+                if not self.manager:
+                    self.manager, company.manager = company.manager, None
+                company.headquarters = False
+                company.save()
+
+        return super(Company, self).save(*args, **kwargs)
+
+    @staticmethod
+    def get_headquarters():
+        return Company.objects.filter(headquarters=True)
+
+    @staticmethod
+    def get_current_headquarter():
+        return Company.get_headquarters().last()
 
 
 class Employee(AbstractBaseUser):
@@ -44,6 +64,9 @@ class Employee(AbstractBaseUser):
         verbose_name = "Funcionário"
         ordering = ["pk"]
 
+    company = models.ForeignKey(
+        verbose_name="empresa", to=Company, on_delete=models.CASCADE
+    )
     name = models.CharField(verbose_name="nome", max_length=100)
     speciality = models.CharField(verbose_name="especialidade", max_length=100)
     document = models.CharField(verbose_name="CPF", max_length=11, unique=True)
@@ -63,7 +86,8 @@ class Employee(AbstractBaseUser):
         return f"[{self.id}] {self.name} ({self.speciality})"
 
     def delete(self, using=None, keep_parents=False):
-        self.photo.storage.delete(self.photo.name)
+        if self.photo:
+            self.photo.storage.delete(self.photo.name)
         super().delete()
 
     @property
@@ -81,7 +105,9 @@ class Client(models.Model):
         ("ESPECIAL", "ESPECIAL"),
         ("DEVEDORES", "DEVEDORES"),
     ]
-
+    company = models.ForeignKey(
+        verbose_name="empresa", to=Company, on_delete=models.CASCADE
+    )
     document = models.CharField(verbose_name="CPF / CNPJ", max_length=14, unique=True)
     name = models.CharField(verbose_name="nome", max_length=100)
     address = models.CharField(verbose_name="endereço", max_length=100)
@@ -111,5 +137,5 @@ class Car(models.Model):
 
 
 @receiver(post_delete, sender=Client)
-def auto_delete_car(sender, instance, **kwargs):
+def auto_delete_car(_, instance, **_kwargs):
     instance.car.delete()

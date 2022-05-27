@@ -1,9 +1,8 @@
 from django.contrib import messages
-from django.db.models import ProtectedError
-from django.http import Http404, HttpResponseRedirect
-from django.shortcuts import redirect
+from django.http import HttpResponseRedirect
 from django.views.generic.base import ContextMixin
-from django.views.generic.edit import ModelFormMixin, DeletionMixin
+from django.views.generic.edit import ModelFormMixin
+from django.views.generic.list import MultipleObjectMixin
 
 from apps.inventory import forms
 
@@ -19,12 +18,26 @@ class BaseModelMixin(ModelFormMixin):
         return super().form_invalid(form)
 
 
+class ModelListMixin(MultipleObjectMixin):
+
+    def get_queryset(self):
+        queryset = super(ModelListMixin, self).get_queryset()
+        if hasattr(self.model, "company"):
+            queryset = queryset.filter(company=self.request.user.company)
+        return queryset
+
+
 class ModelCreateMixin(BaseModelMixin):
 
     def form_valid(self, form):
+        self.object = form.save(commit=False)
+        print("adding company")
+        if hasattr(self.object.__class__, "company"):
+            self.object.company = self.request.user.company
+        self.object.save()
         messages.success(self.request,
                          MESSAGE_SAVED_SUCCESSFULLY % self.model._meta.verbose_name.capitalize())
-        return super().form_valid(form)
+        return HttpResponseRedirect(self.get_success_url())
 
 
 class ModelUpdateMixin(BaseModelMixin):
