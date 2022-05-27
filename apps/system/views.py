@@ -25,6 +25,8 @@ class CompanyEditView(UpdateView, mixins.ModelUpdateMixin):
     form_class = forms.CompanyForm
 
     def get_object(self, queryset=None):
+        if self.kwargs.get("pk"):
+            return super(CompanyEditView, self).get_object(queryset)
         return self.request.user.company
 
     def get_success_url(self):
