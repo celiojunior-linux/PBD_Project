@@ -1,3 +1,5 @@
+from math import inf
+
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import (
     Layout,
@@ -9,18 +11,18 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.forms import inlineformset_factory
 
-from apps.inventory.models import Employee
+from apps.inventory.models import Employee, Company
 from apps.service import models
 from apps.service.models import ServiceOrder, ServiceItemOrder
 from apps.utils.fields import DateInput
 from geopy.distance import geodesic
-from django.forms.models import ModelChoiceIterator
 
 
 class ServiceOrderCreateForm(forms.ModelForm):
-    LONG_DISTANCE_ERROR = (
-        "O cliente encontra-se a %skm (fora da distância de tolerância de %skm)"
-    )
+    LONG_DISTANCE_ERROR = """\
+    O cliente encontra-se a %skm (fora da distância de tolerância de %skm)
+    A empresa mais próxima é %s e está a %skm de distância"
+    """
     INVALID_DISTANCE_ERROR = "A distância do cliente é inválida!"
 
     class Meta:
@@ -36,6 +38,9 @@ class ServiceOrderCreateForm(forms.ModelForm):
         self.fields["sponsor_employee"].queryset = Employee.objects.filter(
             company=self.request.user.company
         )
+        self.closest_company = ""
+        self.closest_distance = ""
+        self.client_distance = ""
 
     def clean_client(self):
         client = self.cleaned_data["client"]
@@ -43,9 +48,23 @@ class ServiceOrderCreateForm(forms.ModelForm):
         client_distance = (client.latitude, client.longitude)
         company_distance = (company.latitude, company.longitude)
         max_distance = company.distance_tolerance
+
         try:
             total_distance = geodesic(client_distance, company_distance).km
-        except ValueError:
+            distances = [
+                (company.name, geodesic(
+                        (client.latitude, client.longitude),
+                        (company.latitude, company.longitude),
+                    ).km)
+                for company in Company.objects.all()
+            ]
+            current_distance = inf
+            for c_name, distance in distances:
+                if distance < current_distance:
+                    self.closest_company = c_name
+                    self.closest_distance = distance
+
+        except ValueError as e:
             raise ValidationError(self.INVALID_DISTANCE_ERROR)
 
         if "confirmDistance" not in self.request.POST:
@@ -60,6 +79,8 @@ class ServiceOrderCreateForm(forms.ModelForm):
         return self.LONG_DISTANCE_ERROR % (
             self.client_distance,
             f"{self.request.user.company.distance_tolerance:.2f}",
+            f"{self.closest_company}",
+            f"{self.closest_distance:.2f}"
         )
 
 
@@ -112,7 +133,7 @@ class ServiceOrderFilter(forms.Form):
         self.request = kwargs.pop("request")
         super(ServiceOrderFilter, self).__init__(*args, **kwargs)
         self.fields["client_car"].widget.attrs["placeholder"] = "Busca..."
-        self.fields["sponsor_employee"].choices = [('', '----')] + [
+        self.fields["sponsor_employee"].choices = [("", "----")] + [
             (employee.pk, employee)
             for employee in Employee.objects.filter(company=self.request.user.company)
         ]
